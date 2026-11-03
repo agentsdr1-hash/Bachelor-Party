@@ -810,29 +810,12 @@ VIEWS.mission = {
         </div>
         <div class="stack" style="align-content:start">
           <div class="panel" id="pulse"></div>
-          <div id="composer"></div>
           <div class="index">${ORDER.slice(1).map(([k, t, s]) => `<a href="#${k}"><b>${t}</b><span>${s}</span></a>`).join("")}</div>
         </div>
       </div>
     </section>`;
   },
-  mount() { tickCountdown(); this.composer(); drawSkylines(); },
-  composer() {
-    const box = $("#composer"); if (!box) return;
-    if (!Store.owner && Store.mode !== "local") { box.innerHTML = ""; return; }
-    box.innerHTML = `<form class="panel stack" id="secret-form">
-      <h3>Plant a personal message</h3>
-      <p class="muted" style="font-size:14px">Only you see this form. The message appears under that day's dispatch once it unseals.</p>
-      <label class="f">Dispatch<select id="secret-day">${DISPATCHES.map(d => `<option value="${h(d.id)}">${h(d.label)}</option>`).join("")}</select></label>
-      <label class="f">Message<textarea id="secret-text" maxlength="1200" placeholder="A note from the bride, a surprise, a clue…"></textarea></label>
-      <div class="row"><button class="btn primary" type="submit">Seal message</button><span class="muted" style="font-size:13px" id="secret-has"></span></div>
-    </form>`;
-    const sel = $("#secret-day"), ta = $("#secret-text");
-    const load = () => { const s = D.secrets.find(x => x.id === sel.value); ta.value = s ? s.text : ""; $("#secret-has").textContent = s ? "A message is already sealed here." : ""; };
-    sel.onchange = load; load();
-    $("#secret-form").onsubmit = e => { e.preventDefault(); const text = ta.value.trim();
-      act(text ? Store.put("secrets", sel.value, {text, at: Date.now()}) : Store.del("secrets", sel.value), text ? "Message sealed" : "Message removed"); };
-  },
+  mount() { tickCountdown(); drawSkylines(); },
   update() {
     const now = Date.now();
     $("#dispatches").innerHTML = DISPATCHES.map(d => {
