@@ -1333,6 +1333,82 @@ VIEWS.leaderboard = {
   },
 };
 
+/* ---------- ACCESS (organizer only) ---------- */
+async function adminApi(action, body = {}) {
+  const {data: {session}} = await SB.auth.getSession();
+  if (!session) throw {message: "Your session expired. Sign in again."};
+  let r;
+  try { r = await fetch("/api/admin", {method: "POST", headers: {"content-type": "application/json", authorization: "Bearer " + session.access_token}, body: JSON.stringify({action, ...body})}); }
+  catch { throw {message: "Couldn't reach the server. Check your connection."}; }
+  const j = await r.json().catch(() => ({error: r.status === 404 ? "The access server isn't deployed yet. Redeploy on Vercel." : "Unexpected server response."}));
+  if (!r.ok) throw {message: j.error || "Error " + r.status};
+  return j;
+}
+const STATUS = {"no-login": ["No login", ""], invited: ["Invited", "warn"], active: ["Active", "ok"]};
+VIEWS.access = {
+  shell() {
+    return `<section class="view">
+      <div class="head"><div class="eyebrow">Organizer only</div><h2>Crew Access</h2>
+      <p>Add each person's email and send them a one-time password. They choose their own password the first time they sign in.</p></div>
+      <div id="acc-result"></div>
+      <div class="stack" id="acc-list"><div class="empty">Loading crew…</div></div>
+    </section>`;
+  },
+  mount() { this.refresh(); },
+  async refresh() {
+    try { const {crew} = await adminApi("list"); this.render(crew); }
+    catch (e) { $("#acc-list").innerHTML = `<div class="banner warn" style="margin:0">${h(e.message)}</div>`; }
+  },
+  render(crew) {
+    $("#acc-list").innerHTML = crew.map(c => {
+      const [label, cls] = STATUS[c.status];
+      const self = c.crew_key === ME;
+      return `<form class="panel stack" data-acc="${c.crew_key}">
+        <div class="spread"><div class="row">${avatar(c.crew_key)}<div><b>${h(crewBy(c.crew_key).name)}</b>${c.is_owner ? ` <span class="pill turq">Organizer</span>` : ""}
+          <div class="muted" style="font-size:12px">${c.last_sign_in ? "Last signed in " + h(fmtTime(Date.parse(c.last_sign_in))) : "Never signed in"}</div></div></div>
+          <span class="pill ${cls}">${label}</span></div>
+        <label class="f">Email<input type="text" inputmode="email" id="acc-email-${c.crew_key}" value="${h(c.email)}" placeholder="name@example.com" ${self ? "disabled" : ""}></label>
+        ${self ? `<p class="muted" style="font-size:13px">This is you. Change your password from the account menu (top right).</p>` : `<div class="row">
+          <button class="btn primary small" type="submit">${c.status === "no-login" ? "Send invite" : "Save email + new one-time password"}</button>
+          ${c.status !== "no-login" ? `<button class="btn small" type="button" data-reset="${c.crew_key}">New one-time password</button>
+          <button class="btn small danger" type="button" data-revoke="${c.crew_key}">Remove access</button>` : ""}</div>`}
+      </form>`;
+    }).join("");
+    $$("[data-acc]").forEach(f => f.onsubmit = e => { e.preventDefault();
+      const key = f.dataset.acc, email = $(`#acc-email-${key}`).value.trim().toLowerCase();
+      if (!email) { toast("Enter an email first."); return; }
+      this.run("invite", {crew_key: key, email}, f); });
+    $$("[data-reset]").forEach(b => b.onclick = () => this.run("reset", {crew_key: b.dataset.reset}, b.closest("form")));
+    $$("[data-revoke]").forEach(b => b.onclick = () => {
+      const key = b.dataset.revoke;
+      openDialog(`<div class="dlg"><h3>Remove ${h(crewBy(key).name)}'s access?</h3><p>They're signed out and can't sign in again until you send a new invite. Their votes, photos and points stay.</p>
+        <div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>Cancel</button><button class="btn danger" type="button" id="rv-yes">Remove access</button></div></div>`);
+      $("#rv-yes").onclick = () => { closeDialog(); this.run("revoke", {crew_key: key}, b.closest("form")); };
+    });
+  },
+  async run(action, body, form) {
+    $$("button", form).forEach(b => b.disabled = true);
+    try {
+      const r = await adminApi(action, body);
+      if (r.password) this.showPassword(body.crew_key, r.email, r.password); else toast("Access removed");
+      await this.refresh();
+    } catch (e) { toast(e.message); $$("button", form).forEach(b => b.disabled = false); }
+  },
+  showPassword(key, email, pw) {
+    const msg = `Op Bosphorus: your login\n${location.origin}\nEmail: ${email}\nOne-time password: ${pw}\nYou'll choose your own password when you sign in.`;
+    $("#acc-result").innerHTML = `<div class="panel stack" style="border-color:var(--gold)">
+      <div class="spread"><h3>One-time password for ${h(crewBy(key).name)}</h3><button class="link" type="button" id="acc-dismiss">Dismiss</button></div>
+      <p class="mono" style="font-size:20px;user-select:all">${h(pw)}</p>
+      <p class="muted" style="font-size:13px">Shown once. Send it by direct message, not in the group chat. It stops working after they set their own password.</p>
+      <pre class="wear" style="white-space:pre-wrap;margin:0;font:inherit;user-select:all" id="acc-msg">${h(msg)}</pre>
+      <div class="row"><button class="btn primary small" type="button" id="acc-copy">Copy message</button></div></div>`;
+    $("#acc-copy").onclick = async () => { try { await navigator.clipboard.writeText(msg); toast("Message copied"); } catch { const r = document.createRange(); r.selectNodeContents($("#acc-msg")); const s = getSelection(); s.removeAllRanges(); s.addRange(r); toast("Selected. Copy it from here."); } };
+    $("#acc-dismiss").onclick = () => $("#acc-result").innerHTML = "";
+    scrollTo({top: 0, behavior: "smooth"});
+  },
+  update() {},
+};
+
 /* ============================================================
    ROUTER
    ============================================================ */
@@ -1340,10 +1416,12 @@ let current = null, raf = 0;
 function route(force = false) {
   if (Store.mode === "signed-out") return;
   const k = (location.hash || "").slice(1);
-  const name = VIEWS[k] ? k : "mission";
+  const allowed = VIEWS[k] && (k !== "access" || (Store.owner && Store.mode === "live"));
+  const name = allowed ? k : "mission";
   if (name === current && !force) return;
   current = name;
-  $("#tabs").innerHTML = ORDER.map(([key, t]) => `<a href="#${key}" ${key === name ? `aria-current="page"` : ""}>${t.replace("The ", "")}</a>`).join("");
+  const tabs = Store.owner && Store.mode === "live" ? [...ORDER, ["access", "Access"]] : ORDER;
+  $("#tabs").innerHTML = tabs.map(([key, t]) => `<a href="#${key}" ${key === name ? `aria-current="page"` : ""}>${t.replace("The ", "")}</a>`).join("");
   $("#view").innerHTML = VIEWS[name].shell();
   VIEWS[name].mount && VIEWS[name].mount();
   VIEWS[name].update();

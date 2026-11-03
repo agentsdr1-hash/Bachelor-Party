@@ -30,18 +30,28 @@ Static site (`index.html`, no build step). Hosted on **Vercel**; votes, points, 
 
 No GitHub? Netlify Drop (app.netlify.com/drop) accepts this folder dragged in directly.
 
-### 3. Crew onboarding (invite-only)
-For each person:
-1. Supabase → **Authentication → Users → Add user → Create new user**.
-2. Enter their email (must match `crew_members`) and a one-time password, tick **Auto Confirm User**, then **Create user**.
-3. Send them the site link and the one-time password, ideally by a different channel from the link.
-4. On first sign-in the site makes them choose their own password.
+### 3. Turn on the Access tab (one time)
+The organizer manages logins from the site's **Access** tab. It runs through `api/admin.js` on Vercel, which needs Supabase's secret key. The key stays on the server and never reaches the page.
+1. Supabase → **Project Settings → API Keys** → **Secret keys** → copy the `sb_secret_…` key (or the legacy `service_role` key).
+2. Vercel → your project → **Settings → Environment Variables**, add:
+   - `SUPABASE_URL` = your Project URL
+   - `SUPABASE_SECRET_KEY` = the secret key
+3. Vercel → **Deployments** → latest → **⋯ → Redeploy** (environment variables only apply to new deploys).
+4. Make sure your own row in `crew_members` has `is_owner = true` (set in `schema.sql`).
 
-**Forgot password:** edit and run `supabase/admin_one_time_password.sql` in the SQL Editor, then send them the new one-time password. Signed-in users can change their password from the account menu (top right).
+### 4. Crew onboarding (from the website)
+Sign in → **Access** tab (organizer only):
+- **Send invite:** enter their email; the site creates their login and shows a one-time password plus a ready-to-send message. Send the password by direct message.
+- **New one-time password:** for someone who forgot theirs.
+- **Save email:** change someone's email; their old login is replaced.
+- **Remove access:** signs them out for good until re-invited. Their votes, photos and points stay.
+
+On first sign-in each person must choose their own password. Anyone can change theirs from the account menu (top right).
 
 ## How access works
 - Every table and the photo bucket are locked by row-level security to emails in `crew_members`.
-- The anon key in `config.js` is meant to be public; it grants nothing without a crew login.
+- The publishable key in `config.js` is meant to be public; it grants nothing without a crew login.
+- The secret key exists only as a Vercel environment variable, used by `api/admin.js`, which accepts requests only from the organizer's signed-in session.
 - Photos and videos live in a **private** bucket and are shown through signed links that expire after 7 days (renewed automatically).
 - Only you can cast your vote, delete your uploads and jokes, or upload into your own folder. Only the groom or organizer can issue point decrees. Only the organizer can write sealed messages.
 
