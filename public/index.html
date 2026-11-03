@@ -458,13 +458,6 @@ const ATTRACTIONS = [
   ["Museum of Turkish & Islamic Arts","Sat 21","Winter ≈ 9:00 AM–5:00 PM. Best carpet collection in the city."],
   ["Dolmabahçe Palace","Fri 20 (optional)","Closed Mondays. ≈ 9:00 AM–5:00 PM; guided route, last entry ≈ 4 PM."],
 ];
-const WINERIES = [
-  ["Chateau Nuzun","Marmaraereğlisi","Thu 10:30 AM","Aggregator hours only (≈ 10 AM–5 PM). Book by phone; ask for a short tasting.","CONFIRM"],
-  ["Barbare","Barbaros, Tekirdağ","Thu 2:00 PM","Organic/biodynamic estate; tour + 5–6 wine flight with cheese. Appointment required.","CONFIRM"],
-  ["Arcadia Vineyards","Lüleburgaz, Kırklareli","Alt. day","Chef's table lunch; Bakucha Vineyard Hotel & Spa on the estate.","ALT"],
-  ["Gürbüz Winery","Kırklareli","Alt. day","Family estate; appointment only.","ALT"],
-  ["Dessera Bağ Evi","Kırklareli","Alt. day","Vineyard house tasting.","ALT"],
-];
 const TRAVEL = [["Oligark, Ortaköy pier, Beşiktaş, Dolmabahçe","5–10 min"],["Beyoğlu / İstiklal / Karaköy","20–30 min"],["Sultanahmet (Old City)","35–50 min"],["Istanbul Airport (IST)","45–60 min"]];
 const PACKING = ["Waterproof shell + compact umbrella","One proper going-out outfit with leather shoes (Oligark)","Trousers that cover knees + top that covers shoulders","Hiking/trail shoes for Kartepe and Maşukiye","Swimwear (bungalow pool + jacuzzi)","Warm mid-layer: fleece or knit","Power bank and EU plug adapter (Type C/F, 230V)","Flip-flops for the hamam","Passport + e-visa printout if your passport needs one"];
 const BOOKINGS = [
@@ -1106,10 +1099,6 @@ VIEWS.itinerary = {
       <div class="stack"><h3>Field guide · attractions</h3>
         <div class="tbl"><table><thead><tr><th>Attraction</th><th>When</th><th>Know before you go</th></tr></thead>
         <tbody>${ATTRACTIONS.map(([a, b, c]) => `<tr><td><a href="${mapUrl(a + " Istanbul")}" target="_blank" rel="noopener"><b>${h(a)}</b></a></td><td class="mono" style="white-space:nowrap">${h(b)}</td><td>${h(c)}</td></tr>`).join("")}</tbody></table></div></div>
-      <div class="stack"><h3>Thrace wine route</h3>
-        <p class="muted">Thursday is the groom's day: one estate per stop, food in between, no rushing. Kırklareli is the alternative (2.5 hrs each way, higher ceiling).</p>
-        <div class="tbl"><table><thead><tr><th>Winery</th><th>Where</th><th>When</th><th>Notes</th></tr></thead>
-        <tbody>${WINERIES.map(([a, b, c, d, s]) => `<tr><td><b>${h(a)}</b> <span class="pill ${s === "ALT" ? "turq" : "warn"}">${s === "ALT" ? "Alt" : "Confirm"}</span></td><td>${h(b)}</td><td class="mono" style="white-space:nowrap">${h(c)}</td><td>${h(d)}</td></tr>`).join("")}</tbody></table></div></div>
     </section>`;
   },
   mount() {
