@@ -160,3 +160,8 @@ insert into public.docs (coll, id, data) values
   ('polls','p-wine-route','{"q":"Wine day: keep Tekirdağ or swap to Kırklareli?","o":["Tekirdağ: Chateau Nuzun + Barbare (1.5 hrs)","Kırklareli: Arcadia chef''s table (2.5 hrs each way)"],"by":"umang","at":1793600002000,"closed":false}'),
   ('polls','p-fri-afternoon','{"q":"Fri 20, 2:00 PM before Oligark: Dolmabahçe or recovery?","o":["Dolmabahçe Palace (last entry ≈ 4 PM)","Nap and reset","Hamam round two"],"by":"umang","at":1793600003000,"closed":false}')
 on conflict (coll, id) do nothing;
+
+------------------------------------------------------------------
+-- 7. Make the API see the new tables immediately
+------------------------------------------------------------------
+notify pgrst, 'reload schema';
