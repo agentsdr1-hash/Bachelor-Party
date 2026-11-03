@@ -46,6 +46,12 @@ module.exports = async (req, res) => {
     add("Supabase: crew_members table", crew.ok, crew.detail, "Run supabase/schema.sql in the Supabase SQL Editor.");
     const docs = await probe("/rest/v1/docs?select=coll&limit=1");
     add("Supabase: docs table", docs.ok, docs.detail, "Run supabase/schema.sql in the Supabase SQL Editor.");
+    try {
+      const r = await fetch(URL_ + "/auth/v1/settings", {headers: headers()});
+      const s = r.ok ? await r.json() : {};
+      add("Supabase: email sign-in enabled", !!(s.external && s.external.email), r.ok ? (s.external && s.external.email ? "on" : "OFF") : "couldn't read auth settings (" + r.status + ")",
+        "Supabase → Authentication → Sign In / Providers → Email: switch it ON (keep 'Allow new users to sign up' off). The site needs it to open sessions.");
+    } catch (e) { add("Supabase: email sign-in enabled", false, "couldn't read auth settings: " + e.message, "Check SUPABASE_URL."); }
     const admin = await probe("/auth/v1/admin/users?page=1&per_page=1");
     add("Supabase: can manage logins", admin.ok, admin.detail, "SUPABASE_SECRET_KEY must be the secret (service_role) key, and SUPABASE_URL must match the same project.");
   }
