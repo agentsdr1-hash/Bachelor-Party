@@ -263,7 +263,12 @@ img{max-width:100%}
 .pw-wrap{position:relative;display:block}
 .pw-wrap input{padding-right:64px!important}
 .pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%)}
-.gate{max-width:440px;margin:6vh auto 0;display:grid;gap:16px}
+.gate{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(280px,1fr);gap:20px;align-items:start;margin-top:2vh}
+.gate .hero h1{font-size:clamp(48px,9vw,96px)}
+.gate-side{display:grid;gap:12px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 70px)}
+.gate-side h3{font-size:20px}
+.gate-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+@media (max-width:820px){.gate{grid-template-columns:1fr}.gate-side{position:static}}
 .ph{width:100%;height:100%;display:grid;place-items:center;color:var(--muted);font:700 11px/1 var(--f-mono)}
 :root{--star:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4 63.4 17.6 82.5 17.5 82.4 36.6 96 50 82.4 63.4 82.5 82.5 63.4 82.4 50 96 36.6 82.4 17.5 82.5 17.6 63.4 4 50 17.6 36.6 17.5 17.5 36.6 17.6Z'/%3E%3C/svg%3E")}
 </style>
@@ -654,14 +659,30 @@ async function signPending() {
 
 /* Sign-in gate. Who can sign in, and with which password, is set in crew.json on GitHub. */
 const PW_STYLE = "background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);font-size:15px";
+// Public home page: anyone with the link sees the title and both countdowns.
+// Everything else (itinerary, address, crew, photos, dispatches) stays behind sign-in.
 function gateShell(inner) {
   $("#tabs").innerHTML = ""; current = null;
   $("#view").innerHTML = `<section class="gate">
-    <div class="hero" style="padding:28px"><span class="stamp">Classified</span><h1 style="font-size:56px">Op · Bosphorus</h1>
-      <p class="sub">Crew access only.</p></div>${inner}</section>`;
+    <div class="hero">
+      <span class="stamp">Classified · Crew only</span>
+      <div class="eyebrow" style="margin-top:18px">Operation Bosphorus · November 2026</div>
+      <h1>Umang's Bachelor</h1>
+      <p class="sub">Nine days in Istanbul, then the wedding in Hua Hin.</p>
+      <div class="gate-facts"><span class="pill turq">Istanbul · Nov 14–22</span><span class="pill" style="color:var(--gold)">Wedding · Dec 19</span></div>
+      <div class="cds">
+        <div class="cd-block"><div class="cd-label" id="cd-label"></div><div class="countdown" id="cd"></div>
+          <div class="cd-sub">Istanbul · Sat Nov 14 – Sun Nov 22, 2026</div></div>
+        <div class="cd-block wed"><div class="cd-label" id="wd-label"></div><div class="countdown" id="wd"></div>
+          <div class="cd-sub" id="wd-sub"></div></div>
+      </div>
+    </div>
+    <aside class="gate-side">${inner}</aside></section>`;
+  tickCountdown();
 }
 function showGate(msg = "") {
   gateShell(`<form class="panel stack" id="gate-form">
+      <div><div class="eyebrow">Crew sign-in</div><h3 style="margin-top:6px">Agents only</h3></div>
       ${msg ? `<p class="banner warn" style="margin:0">${h(msg)}</p>` : ""}
       <label class="f">Email<input type="text" id="g-email" inputmode="email" autocomplete="email" required></label>
       <label class="f">Password<span class="pw-wrap"><input type="password" id="g-pass" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required style="${PW_STYLE}"><button class="link pw-eye" type="button" data-eye="g-pass">Show</button></span></label>
@@ -889,7 +910,7 @@ function tickCountdown() {
     } else if (now < T_WEDDING) {
       $("#wd-label").textContent = "The wedding · Umang says yes in";
       wd.innerHTML = cdDigits(T_WEDDING - now);
-      $("#wd-sub").textContent = [new Intl.DateTimeFormat("en-US", {weekday: "short", month: "short", day: "numeric", year: "numeric"}).format(T_WEDDING), WEDDING_PLACE].filter(Boolean).join(" · ");
+      $("#wd-sub").textContent = [new Intl.DateTimeFormat("en-US", {weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: (window.BP_CONFIG || {}).weddingTz || undefined}).format(T_WEDDING), WEDDING_PLACE].filter(Boolean).join(" · ");
     } else {
       $("#wd-label").textContent = "The wedding";
       wd.innerHTML = `<div class="cd"><b>Married</b><span>Mission accomplished</span></div>`;
