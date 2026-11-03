@@ -260,6 +260,9 @@ dialog::backdrop{background:rgba(3,6,14,.7)}
 [hidden]{display:none!important}
 img{max-width:100%}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.pw-wrap{position:relative;display:block}
+.pw-wrap input{padding-right:64px!important}
+.pw-eye{position:absolute;right:12px;top:50%;transform:translateY(-50%)}
 .gate{max-width:440px;margin:6vh auto 0;display:grid;gap:16px}
 .ph{width:100%;height:100%;display:grid;place-items:center;color:var(--muted);font:700 11px/1 var(--f-mono)}
 :root{--star:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4 63.4 17.6 82.5 17.5 82.4 36.6 96 50 82.4 63.4 82.5 82.5 63.4 82.4 50 96 36.6 82.4 17.5 82.5 17.6 63.4 4 50 17.6 36.6 17.5 17.5 36.6 17.6Z'/%3E%3C/svg%3E")}
@@ -665,13 +668,13 @@ function showGate(msg = "") {
   gateShell(`<form class="panel stack" id="gate-form">
       ${msg ? `<p class="banner warn" style="margin:0">${h(msg)}</p>` : ""}
       <label class="f">Email<input type="text" id="g-email" inputmode="email" autocomplete="email" required></label>
-      <label class="f">Password<input type="password" id="g-pass" autocomplete="current-password" required style="${PW_STYLE}"></label>
+      <label class="f">Password<span class="pw-wrap"><input type="password" id="g-pass" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required style="${PW_STYLE}"><button class="link pw-eye" type="button" data-eye="g-pass">Show</button></span></label>
       <div><button class="btn primary" type="submit" id="g-in">Sign in</button></div>
       <p class="muted" style="font-size:13px">First time? Use the one-time password the organizer sent you; you'll choose your own next. Forgot your password? Ask the organizer for a new one-time password.</p>
     </form>`);
   $("#gate-form").onsubmit = async e => {
     e.preventDefault();
-    const email = $("#g-email").value.trim().toLowerCase(), password = $("#g-pass").value;
+    const email = $("#g-email").value.trim().toLowerCase(), password = $("#g-pass").value.trim();
     if (!email || !password) { toast("Enter your email and password."); return; }
     $("#g-in").disabled = true;
     const {error} = await SB.auth.signInWithPassword({email, password});
@@ -681,7 +684,7 @@ function showGate(msg = "") {
   };
 }
 function passwordFields(prefix) {
-  return `<label class="f">New password<input type="password" id="${prefix}-p1" autocomplete="new-password" minlength="8" required style="${PW_STYLE}"></label>
+  return `<label class="f">New password<span class="pw-wrap"><input type="password" id="${prefix}-p1" autocomplete="new-password" autocapitalize="off" autocorrect="off" spellcheck="false" minlength="8" required style="${PW_STYLE}"><button class="link pw-eye" type="button" data-eye="${prefix}-p1">Show</button></span></label>
     <label class="f">Repeat new password<input type="password" id="${prefix}-p2" autocomplete="new-password" minlength="8" required style="${PW_STYLE}"></label>`;
 }
 async function savePassword(prefix) {
@@ -1433,6 +1436,11 @@ function changed() {
 }
 window.addEventListener("hashchange", () => { route(); scrollTo({top: 0}); });
 $("#me-chip").onclick = pickMe;
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-eye]"); if (!b) return;
+  const i = document.getElementById(b.dataset.eye); if (!i) return;
+  const show = i.type === "password"; i.type = show ? "text" : "password"; b.textContent = show ? "Hide" : "Show";
+});
 // Mission dispatches unseal on the clock: refresh once a minute.
 setInterval(() => { if (current === "mission") VIEWS.mission.update(); }, 60000);
 
