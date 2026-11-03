@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
 /* Layout: a mission dossier set at night on the Bosphorus. Sticky command bar + tab strip,
    Iznik star tile and a skyline of domes and minarets under a crescent as the only ornament.
@@ -114,7 +115,9 @@ textarea{min-height:84px;resize:vertical}
 .hero{padding-bottom:clamp(90px,14vw,150px)}
 .hero>canvas.skyline{position:absolute;left:0;right:0;bottom:0;width:100%;height:clamp(80px,13vw,140px);z-index:1;pointer-events:none}
 /* Map tab */
-.map-box{height:min(68vh,620px);min-height:360px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--panel-2)}
+.map-box{position:relative;z-index:0;isolation:isolate;height:min(68vh,620px);min-height:340px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--panel-2)}
+@media (max-width:560px){.map-box{height:56vh}}
+.map-box .leaflet-control-attribution{font-size:10px}
 .map-pin{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 12px/1 var(--f-mono);color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45)}
 .map-pin.base{width:30px;height:30px;border-radius:6px;background:var(--coral);font-size:14px}
 .map-list{display:grid;gap:6px}
@@ -309,6 +312,7 @@ img{max-width:100%}
 <dialog id="dlg"><div id="dlg-body"></div></dialog>
 <div class="toast" id="toast" role="status" hidden></div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.3/dist/umd/supabase.js"></script>
 <script src="config.js"></script>
 <script>
@@ -1099,16 +1103,7 @@ VIEWS.itinerary = {
 /* ---------- THE MAP ---------- */
 let mapDay = "all", leafletMap = null, mapLayer = null, mapMarkers = [];
 function loadLeaflet() {
-  if (window.L) return Promise.resolve(window.L);
-  if (loadLeaflet.p) return loadLeaflet.p;
-  loadLeaflet.p = new Promise((res, rej) => {
-    const css = document.createElement("link"); css.rel = "stylesheet";
-    css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.appendChild(css);
-    const s = document.createElement("script"); s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
-    s.onload = () => res(window.L); s.onerror = () => { loadLeaflet.p = null; rej(new Error("Map library didn't load.")); };
-    document.head.appendChild(s);
-  });
-  return loadLeaflet.p;
+  return window.L ? Promise.resolve(window.L) : Promise.reject(new Error("The map library didn't load."));
 }
 function mapStops() {
   const out = [];
@@ -1131,10 +1126,12 @@ VIEWS.map = {
     </section>`;
   },
   async mount() {
+    const token = this.token = (this.token || 0) + 1;
     $$("[data-md]").forEach(b => b.onclick = () => { mapDay = b.dataset.md; $$("[data-md]").forEach(x => x.setAttribute("aria-pressed", x === b)); this.draw(true); });
     try { await loadLeaflet(); } catch (e) { $("#map").innerHTML = `<div class="empty" style="border:0">${h(e.message)} Check your connection and reload.</div>`; return; }
-    if (!$("#map")) return; // navigated away while loading
-    if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+    if (!$("#map") || token !== this.token) return; // navigated away or re-mounted while loading
+    if (this.ro) { this.ro.disconnect(); this.ro = null; }
+    if (leafletMap) { leafletMap.stop(); leafletMap.off(); leafletMap.remove(); leafletMap = null; }
     $("#map").innerHTML = "";
     leafletMap = L.map("map", {zoomControl: true, attributionControl: true, scrollWheelZoom: false}).setView([41.03, 28.99], 12);
     const style = isDark() ? "dark_all" : "light_all";
@@ -1146,11 +1143,16 @@ VIEWS.map = {
     $("#map-city").onclick = () => leafletMap.fitBounds([[40.98, 28.95], [41.08, 29.05]]);
     $("#map-all").onclick = () => this.fit(true);
     $("#map-base").onclick = () => leafletMap.setView(BASE_LATLNG, 15);
-    this.draw(true);
+    this.draw(false);
+    // Leaflet needs the box's real size; it is only known after layout.
+    const box = $("#map"), m = leafletMap;
+    if (window.ResizeObserver) { this.ro = new ResizeObserver(() => { if (leafletMap === m) m.invalidateSize(); }); this.ro.observe(box); }
+    requestAnimationFrame(() => { if (leafletMap !== m) return; m.invalidateSize(); this.fit(false, false); });
+    setTimeout(() => { if (leafletMap === m) m.invalidateSize(); }, 400);
   },
-  fit(all) {
+  fit(all, animate = true) {
     const pts = (all ? mapStops() : mapMarkers.map(m => m.s)).map(s => s.ll).concat([BASE_LATLNG]);
-    if (pts.length) leafletMap.fitBounds(pts, {padding: [30, 30], maxZoom: 15});
+    if (pts.length) leafletMap.fitBounds(pts, {padding: [30, 30], maxZoom: 15, animate});
   },
   draw(fit) {
     if (!leafletMap) return;
