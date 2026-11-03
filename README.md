@@ -20,7 +20,7 @@ Static site (`index.html`, no build step). Hosted on **Vercel**; votes, points, 
 2. Open `supabase/schema.sql`, replace the five `@example.com` emails with the crew's real emails (lowercase), and uncomment the `is_owner` line for the organizer.
 3. Supabase → **SQL Editor** → paste the whole file → **Run**.
 4. Supabase → **Authentication → Sign In / Providers → Email**: keep Email enabled and turn **off "Confirm email"**. The built-in mailer only sends a few emails per hour, which isn't enough for 5 people on several phones.
-5. Supabase → **Project Settings → API**: copy the **Project URL** and the **anon public** key into `config.js`.
+5. Supabase → **Project Settings → API**: copy the **Project URL** and the **publishable** key (`sb_publishable_…`) into `config.js`. Never use the secret/service_role key.
 
 ### 2. Vercel (hosting)
 1. vercel.com → **Add New → Project** → import `agentsdr1-hash/Bachelor-Party`.
