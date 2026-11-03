@@ -545,8 +545,10 @@ const Store = {
     }
     const {data: {session}} = await SB.auth.getSession();
     if (!session) { this.mode = "signed-out"; paintStatus(); showGate(); return false; }
-    const {data: member, error} = await SB.from("crew_members").select("crew_key,is_owner").eq("email", session.user.email.toLowerCase()).maybeSingle();
+    const {data: member, error} = await SB.from("crew_members").select("crew_key,is_owner,password_set").eq("email", session.user.email.toLowerCase()).maybeSingle();
     if (error || !member) { await SB.auth.signOut(); this.mode = "signed-out"; showGate("That email isn't on the crew list. Ask the organizer to add it."); return false; }
+    // First login with a one-time password, or arriving from a recovery link: set a new one before anything else.
+    if (!member.password_set || RECOVERY) { this.mode = "signed-out"; paintStatus(); showSetPassword(member.crew_key); return false; }
     this.member = member; this.owner = !!member.is_owner;
     ME = member.crew_key;
     this.mode = "live";
@@ -642,32 +644,66 @@ async function signPending() {
   changed();
 }
 
-/* Sign-in gate (email + password; only emails on the crew list can create an account). */
-function showGate(msg = "") {
+/* Sign-in gate. Accounts are created by the organizer in Supabase with a one-time password. */
+let RECOVERY = /type=recovery/.test(location.hash);
+if (SB) SB.auth.onAuthStateChange(ev => { if (ev === "PASSWORD_RECOVERY") { RECOVERY = true; Store.init(); } });
+const PW_STYLE = "background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);font-size:15px";
+function gateShell(inner) {
   $("#tabs").innerHTML = ""; current = null;
   $("#view").innerHTML = `<section class="gate">
     <div class="hero" style="padding:28px"><span class="stamp">Classified</span><h1 style="font-size:56px">Op · Bosphorus</h1>
-      <p class="sub">Crew access only. Sign in with the email the organizer put on the list.</p></div>
-    <form class="panel stack" id="gate-form">
+      <p class="sub">Crew access only.</p></div>${inner}</section>`;
+}
+function showGate(msg = "") {
+  gateShell(`<form class="panel stack" id="gate-form">
       ${msg ? `<p class="banner warn" style="margin:0">${h(msg)}</p>` : ""}
       <label class="f">Email<input type="text" id="g-email" inputmode="email" autocomplete="email" required></label>
-      <label class="f">Password<input type="password" id="g-pass" autocomplete="current-password" minlength="8" required
-        style="background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);font-size:15px"></label>
-      <div class="row"><button class="btn primary" type="submit" id="g-in">Sign in</button><button class="btn" type="button" id="g-up">First time? Create account</button></div>
-      <p class="muted" style="font-size:13px">Passwords need 8+ characters. You stay signed in on this device.</p>
-    </form></section>`;
-  const go = async signup => {
+      <label class="f">Password<input type="password" id="g-pass" autocomplete="current-password" required style="${PW_STYLE}"></label>
+      <div><button class="btn primary" type="submit" id="g-in">Sign in</button></div>
+      <p class="muted" style="font-size:13px">First time? Use the one-time password the organizer sent you; you'll choose your own next. Forgot your password? Ask the organizer for a new one-time password.</p>
+    </form>`);
+  $("#gate-form").onsubmit = async e => {
+    e.preventDefault();
     const email = $("#g-email").value.trim().toLowerCase(), password = $("#g-pass").value;
-    if (!email || password.length < 8) { toast("Enter your email and a password of 8+ characters."); return; }
-    $("#g-in").disabled = $("#g-up").disabled = true;
-    const {data, error} = signup ? await SB.auth.signUp({email, password}) : await SB.auth.signInWithPassword({email, password});
-    $("#g-in").disabled = $("#g-up").disabled = false;
-    if (error) { toast(/saving new user|not on the crew/i.test(error.message) ? "That email isn't on the crew list." : /invalid login/i.test(error.message) ? "Wrong email or password. First time here? Tap Create account." : error.message); return; }
-    if (signup && !data.session) { toast("Account created. Check your email to confirm it, then sign in."); return; }
+    if (!email || !password) { toast("Enter your email and password."); return; }
+    $("#g-in").disabled = true;
+    const {error} = await SB.auth.signInWithPassword({email, password});
+    $("#g-in").disabled = false;
+    if (error) { toast(/invalid login/i.test(error.message) ? "Wrong email or password. Ask the organizer if you need a new one-time password." : error.message); return; }
     if (await Store.init()) route(true);
   };
-  $("#gate-form").onsubmit = e => { e.preventDefault(); go(false); };
-  $("#g-up").onclick = () => go(true);
+}
+function passwordFields(prefix) {
+  return `<label class="f">New password<input type="password" id="${prefix}-p1" autocomplete="new-password" minlength="8" required style="${PW_STYLE}"></label>
+    <label class="f">Repeat new password<input type="password" id="${prefix}-p2" autocomplete="new-password" minlength="8" required style="${PW_STYLE}"></label>`;
+}
+async function savePassword(prefix) {
+  const p1 = $(`#${prefix}-p1`).value, p2 = $(`#${prefix}-p2`).value;
+  if (p1.length < 8) { toast("Use at least 8 characters."); return false; }
+  if (p1 !== p2) { toast("The two passwords don't match."); return false; }
+  const {error} = await SB.auth.updateUser({password: p1});
+  if (error) { toast(/different from the old/i.test(error.message) ? "Choose a password different from the one-time password." : error.message); return false; }
+  const r = await SB.rpc("mark_password_set");
+  if (r.error) { toast("Password changed, but the site couldn't record it. Tell the organizer."); return false; }
+  return true;
+}
+function showSetPassword(key) {
+  gateShell(`<form class="panel stack" id="setpw-form">
+      <div class="eyebrow">Welcome${crewBy(key) ? ", " + h(crewBy(key).name) : ""}</div>
+      <h3>Choose your own password</h3>
+      <p class="muted" style="font-size:14px">Replace the one-time password with one only you know. 8+ characters.</p>
+      ${passwordFields("sp")}
+      <div class="row"><button class="btn primary" type="submit" id="sp-save">Save and continue</button><button class="btn" type="button" id="sp-out">Sign out</button></div>
+    </form>`);
+  $("#sp-out").onclick = async () => { await SB.auth.signOut(); location.replace(location.pathname); };
+  $("#setpw-form").onsubmit = async e => {
+    e.preventDefault(); $("#sp-save").disabled = true;
+    const ok = await savePassword("sp"); $("#sp-save").disabled = false;
+    if (!ok) return;
+    RECOVERY = false; if (location.hash) history.replaceState(null, "", location.pathname);
+    toast("Password saved");
+    if (await Store.init()) route(true);
+  };
 }
 
 function shrink(file, max, q) {
@@ -693,8 +729,12 @@ function pickMe() {
   if (Store.mode === "live") {
     openDialog(`<div class="dlg"><div class="eyebrow">Signed in</div><h3>${h(crewBy(ME)?.name || "")}</h3>
       <p class="muted">Your votes, uploads and points are signed with this account.</p>
+      <form class="stack" id="chpw-form"><div class="eyebrow">Change password</div>${passwordFields("cp")}
+        <div><button class="btn" type="submit" id="cp-save">Change password</button></div></form>
       <div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>Close</button><button class="btn danger" type="button" id="sign-out">Sign out</button></div></div>`);
     $("#sign-out").onclick = async () => { await SB.auth.signOut(); location.reload(); };
+    $("#chpw-form").onsubmit = async e => { e.preventDefault(); $("#cp-save").disabled = true;
+      const ok = await savePassword("cp"); $("#cp-save").disabled = false; if (ok) { closeDialog(); toast("Password changed"); } };
     return;
   }
   openDialog(`<div class="dlg">

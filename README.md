@@ -19,8 +19,9 @@ Static site (`index.html`, no build step). Hosted on **Vercel**; votes, points, 
 1. Create a free project at supabase.com. Region: Frankfurt (closest to Istanbul).
 2. Open `supabase/schema.sql`, replace the five `@example.com` emails with the crew's real emails (lowercase), and uncomment the `is_owner` line for the organizer.
 3. Supabase → **SQL Editor** → paste the whole file → **Run**.
-4. Supabase → **Authentication → Sign In / Providers → Email**: keep Email enabled and turn **off "Confirm email"**. The built-in mailer only sends a few emails per hour, which isn't enough for 5 people on several phones.
-5. Supabase → **Project Settings → API**: copy the **Project URL** and the **publishable** key (`sb_publishable_…`) into `config.js`. Never use the secret/service_role key.
+4. Run `supabase/002_invite_only.sql` the same way (one-time-password support).
+5. Supabase → **Authentication → Sign In / Providers**: turn **off "Allow new users to sign up"**, and under **Email** turn **off "Confirm email"**.
+6. Supabase → **Project Settings → API Keys**: copy the **Project URL** and the **publishable** key (`sb_publishable_…`) into `config.js`. Never use the secret/service_role key.
 
 ### 2. Vercel (hosting)
 1. vercel.com → **Add New → Project** → import `agentsdr1-hash/Bachelor-Party`.
@@ -29,8 +30,14 @@ Static site (`index.html`, no build step). Hosted on **Vercel**; votes, points, 
 
 No GitHub? Netlify Drop (app.netlify.com/drop) accepts this folder dragged in directly.
 
-### 3. Crew onboarding
-Send the link. Each person taps **First time? Create account** with the email on the list and picks a password. Emails not on the list are refused.
+### 3. Crew onboarding (invite-only)
+For each person:
+1. Supabase → **Authentication → Users → Add user → Create new user**.
+2. Enter their email (must match `crew_members`) and a one-time password, tick **Auto Confirm User**, then **Create user**.
+3. Send them the site link and the one-time password, ideally by a different channel from the link.
+4. On first sign-in the site makes them choose their own password.
+
+**Forgot password:** edit and run `supabase/admin_one_time_password.sql` in the SQL Editor, then send them the new one-time password. Signed-in users can change their password from the account menu (top right).
 
 ## How access works
 - Every table and the photo bucket are locked by row-level security to emails in `crew_members`.

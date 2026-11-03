@@ -9,8 +9,10 @@
 create table if not exists public.crew_members (
   email     text primary key check (email = lower(email)),
   crew_key  text not null unique check (crew_key in ('umang','sagar','dev','abhi','nick')),
-  is_owner  boolean not null default false
+  is_owner  boolean not null default false,
+  password_set boolean not null default false   -- false until they replace their one-time password
 );
+alter table public.crew_members add column if not exists password_set boolean not null default false;
 
 insert into public.crew_members (email, crew_key, is_owner) values
   ('umang@example.com', 'umang', false),
@@ -65,6 +67,13 @@ language sql stable security definer set search_path = public as $$
     else true
   end
 $$;
+
+create or replace function public.mark_password_set() returns void
+language sql security definer set search_path = public as $$
+  update public.crew_members set password_set = true where email = lower(auth.jwt() ->> 'email')
+$$;
+revoke all on function public.mark_password_set() from public, anon;
+grant execute on function public.mark_password_set() to authenticated;
 
 ------------------------------------------------------------------
 -- 3. Shared documents (votes, points, uploads, profiles, ...)
