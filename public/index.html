@@ -9,16 +9,19 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
-/* Layout: a field dossier. Sticky command bar + tab strip, one section on screen at a time, Iznik star tile as the only ornament. */
+/* Layout: a mission dossier set at night on the Bosphorus. Sticky command bar + tab strip,
+   Iznik star tile and a skyline of domes and minarets under a crescent as the only ornament.
+   Palette: Bosphorus night navy, Turkish flag red (primary), Iznik cobalt + turquoise, Ottoman gold. */
 :root{
-  --bg:#0b1220; --panel:#121b2e; --panel-2:#18233a; --line:#26324d;
-  --ink:#e8ecf4; --muted:#93a0b8;
-  --tile:#3d6fe0;      /* Iznik cobalt */
-  --turq:#35b9ab;      /* primary accent */
-  --coral:#ec5b40;     /* Iznik red: seals, stamps, danger */
-  --gold:#e7b54d;      /* points */
-  --ok:#4cc38a; --warn:#e7b54d;
-  --on-accent:#06110f;
+  --bg:#080e1c; --panel:#0f1729; --panel-2:#152038; --line:#24304c;
+  --ink:#f1ede4; --muted:#9aa5bd;
+  --tile:#2f62e0;      /* Iznik cobalt */
+  --turq:#2fb8aa;      /* Iznik turquoise: links, info */
+  --coral:#ee2b37;     /* Turkish flag red: primary action, seals, stamps */
+  --gold:#e2ad4a;      /* Ottoman gold: points, wedding */
+  --sky:#233a70;       /* skyline silhouette */
+  --ok:#4cc38a; --warn:#e2ad4a;
+  --on-accent:#ffffff;
   --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
   --f-body:"Public Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
@@ -26,20 +29,20 @@
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
-  --bg:#eef2f8; --panel:#ffffff; --panel-2:#f5f7fb; --line:#d4dbe8;
-  --ink:#111a2c; --muted:#56627a; --tile:#1f4fbf; --turq:#0d7d72; --coral:#c43c22; --gold:#946510;
-  --ok:#1d8a55; --warn:#946510; --on-accent:#ffffff; color-scheme:light}}
+  --bg:#eef1f6; --panel:#ffffff; --panel-2:#f4f6fa; --line:#d3d9e6;
+  --ink:#0c1630; --muted:#55617a; --tile:#1c4fc4; --turq:#0b7a70; --coral:#c8102e; --gold:#8c5c00; --sky:#c3cde4;
+  --ok:#1d8a55; --warn:#8c5c00; --on-accent:#ffffff; color-scheme:light}}
 :root[data-theme="light"]{
-  --bg:#eef2f8; --panel:#ffffff; --panel-2:#f5f7fb; --line:#d4dbe8;
-  --ink:#111a2c; --muted:#56627a; --tile:#1f4fbf; --turq:#0d7d72; --coral:#c43c22; --gold:#946510;
-  --ok:#1d8a55; --warn:#946510; --on-accent:#ffffff; color-scheme:light}
+  --bg:#eef1f6; --panel:#ffffff; --panel-2:#f4f6fa; --line:#d3d9e6;
+  --ink:#0c1630; --muted:#55617a; --tile:#1c4fc4; --turq:#0b7a70; --coral:#c8102e; --gold:#8c5c00; --sky:#c3cde4;
+  --ok:#1d8a55; --warn:#8c5c00; --on-accent:#ffffff; color-scheme:light}
 
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-body);margin:0;-webkit-font-smoothing:antialiased}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
 a{color:var(--turq)}
 button,input,select,textarea{font:inherit;color:inherit}
-:focus-visible{outline:2px solid var(--turq);outline-offset:2px}
+:focus-visible{outline:2px solid var(--coral);outline-offset:2px}
 h1,h2,h3{font-family:var(--f-display);font-weight:800;letter-spacing:.01em;line-height:1.02;text-wrap:balance;margin:0}
 h2{font-size:clamp(30px,6vw,44px);text-transform:uppercase}
 h3{font-size:22px;text-transform:uppercase;letter-spacing:.02em}
@@ -64,7 +67,7 @@ p{margin:0}
 .tabs::-webkit-scrollbar{display:none}
 .tabs a{flex:none;text-decoration:none;color:var(--muted);font:700 15px/1 var(--f-display);letter-spacing:.08em;text-transform:uppercase;padding:10px 12px 12px;border-bottom:3px solid transparent}
 .tabs a:hover{color:var(--ink)}
-.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--turq)}
+.tabs a[aria-current="page"]{color:var(--ink);border-bottom-color:var(--coral)}
 
 main{padding-block:28px 80px}
 section.view{display:grid;gap:28px}
@@ -82,7 +85,7 @@ section.view{display:grid;gap:28px}
 /* buttons, inputs */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--line);background:var(--panel-2);border-radius:8px;padding:8px 14px;cursor:pointer;font-weight:600;font-size:14px;text-decoration:none;color:var(--ink)}
 .btn:hover{border-color:var(--muted)}
-.btn.primary{background:var(--turq);border-color:var(--turq);color:var(--on-accent)}
+.btn.primary{background:var(--coral);border-color:var(--coral);color:var(--on-accent)}
 .btn.danger{color:var(--coral)}
 .btn.small{padding:5px 10px;font-size:13px}
 .btn[disabled]{opacity:.5;cursor:not-allowed}
@@ -107,7 +110,18 @@ textarea{min-height:84px;resize:vertical}
 .hero{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:var(--panel);padding:clamp(22px,5vw,44px)}
 .hero::before{content:"";position:absolute;inset:0;background:var(--tile);opacity:.13;-webkit-mask:var(--star) 0 0/56px 56px repeat;mask:var(--star) 0 0/56px 56px repeat;pointer-events:none}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,var(--panel) 35%,transparent 100%);pointer-events:none}
-.hero>*{position:relative;z-index:1}
+.hero>*{position:relative;z-index:2}
+.hero{padding-bottom:clamp(90px,14vw,150px)}
+.hero>canvas.skyline{position:absolute;left:0;right:0;bottom:0;width:100%;height:clamp(80px,13vw,140px);z-index:1;pointer-events:none}
+/* Map tab */
+.map-box{height:min(68vh,620px);min-height:360px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--panel-2)}
+.map-pin{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 12px/1 var(--f-mono);color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45)}
+.map-pin.base{width:30px;height:30px;border-radius:6px;background:var(--coral);font-size:14px}
+.map-list{display:grid;gap:6px}
+.map-item{display:grid;grid-template-columns:28px 1fr auto;gap:10px;align-items:center;text-align:left;width:100%;border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 10px;cursor:pointer;color:var(--ink)}
+.map-item .map-pin{width:22px;height:22px;font-size:11px}
+.leaflet-popup-content{font:14px/1.45 var(--f-body)}
+.leaflet-popup-content b{font-family:var(--f-display);font-size:17px;text-transform:uppercase;letter-spacing:.02em}
 .hero h1{font-size:clamp(52px,12vw,112px);text-transform:uppercase;font-weight:900;letter-spacing:-.005em;margin-top:10px}
 .hero .sub{font-size:clamp(16px,2.4vw,19px);max-width:46ch;margin-top:10px}
 .stamp{display:inline-block;font:700 12px/1 var(--f-mono);letter-spacing:.2em;color:var(--coral);border:2px solid var(--coral);padding:6px 10px;transform:rotate(-2deg);text-transform:uppercase}
@@ -390,6 +404,42 @@ const DAYS = [
     wear:"Travel clothes; leave the fancy kit packed the night before."},
 ];
 
+// [lat, lng] for every map query used in DAYS. Approximate pin positions.
+const PLACES = {
+  "Istanbul Airport": [41.2753, 28.7519],
+  "Ortaköy Mosque": [41.0473, 29.0270],
+  "İstiklal Avenue": [41.0340, 28.9780],
+  "Blue Mosque Istanbul": [41.0054, 28.9768],
+  "Hagia Sophia": [41.0086, 28.9802],
+  "Basilica Cistern": [41.0084, 28.9779],
+  "Asmalımescit Beyoğlu": [41.0312, 28.9745],
+  "Kartepe Teleferik Maşukiye": [40.7050, 30.1470],
+  "Maşukiye Kartepe": [40.7095, 30.1510],
+  "Sapanca": [40.6917, 30.2683],
+  "Sapanca Gölü": [40.7190, 30.2520],
+  "Ormanya Kartepe": [40.7550, 30.0080],
+  "Kılıç Ali Paşa Hamamı": [41.0257, 28.9802],
+  "Karaköy İskelesi": [41.0218, 28.9768],
+  "Kadife Sokak Kadıköy": [40.9868, 29.0283],
+  "Topkapı Palace": [41.0115, 28.9834],
+  "Istanbul Archaeology Museums": [41.0117, 28.9810],
+  "Grand Bazaar Istanbul": [41.0107, 28.9680],
+  "Süleymaniye Mosque": [41.0162, 28.9639],
+  "Ortaköy İskelesi": [41.0477, 29.0262],
+  "Chateau Nuzun Marmaraereğlisi": [40.9700, 27.9550],
+  "Tekirdağ köftecisi": [40.9781, 27.5115],
+  "Barbare Winery Barbaros Tekirdağ": [40.9050, 27.4580],
+  "Ortaköy": [41.0480, 29.0250],
+  "Bebek Istanbul": [41.0770, 29.0435],
+  "Dolmabahçe Palace": [41.0392, 29.0005],
+  "Oligark Istanbul Kuruçeşme": [41.0575, 29.0350],
+  "Beşiktaş Kahvaltıcılar Sokağı": [41.0435, 29.0055],
+  "Museum of Turkish and Islamic Arts": [41.0063, 28.9752],
+  "360 Istanbul": [41.0333, 28.9767],
+};
+const BASE_LATLNG = [41.0490, 29.0255];
+const DAY_COLORS = ["#ee2b37","#2f62e0","#1f9e8f","#d18a12","#8a4fd6","#e0567a","#0e8fc2","#6b8f1a","#b5651d"];
+
 const ATTRACTIONS = [
   ["Hagia Sophia","Sun 15 · Sat 21","Separate paid tourist entrance to the upper galleries; closes to visitors around prayer times."],
   ["Blue Mosque","Sun 15 · Sat 21","Free. Covered shoulders and knees, shoes off. Closed to visitors ~60–90 min around each prayer."],
@@ -665,6 +715,7 @@ function gateShell(inner) {
   $("#tabs").innerHTML = ""; current = null;
   $("#view").innerHTML = `<section class="gate">
     <div class="hero">
+      <canvas class="skyline" aria-hidden="true"></canvas>
       <span class="stamp">Classified · Crew only</span>
       <div class="eyebrow" style="margin-top:18px">Operation Bosphorus · November 2026</div>
       <h1>Umang's Bachelor</h1>
@@ -678,7 +729,7 @@ function gateShell(inner) {
       </div>
     </div>
     <aside class="gate-side">${inner}</aside></section>`;
-  tickCountdown();
+  tickCountdown(); drawSkylines();
 }
 function showGate(msg = "") {
   gateShell(`<form class="panel stack" id="gate-form">
@@ -797,6 +848,7 @@ const ORDER = [
   ["crew","The Crew","Profiles, nicknames, photos"],
   ["intel","The Intel","Flights, base, logistics, packing"],
   ["itinerary","The Itinerary","Nine days, times and maps"],
+  ["map","The Map","Every stop on one map"],
   ["challenges","The Challenges","Games, dares, competitions"],
   ["vault","The Vault","Photos, videos, inside jokes"],
   ["polls","The Polls","Live votes on what's next"],
@@ -808,6 +860,7 @@ VIEWS.mission = {
   shell() {
     return `<section class="view">
       <div class="hero">
+        <canvas class="skyline" aria-hidden="true"></canvas>
         <span class="stamp">Classified · Eyes of the crew only</span>
         <div class="eyebrow" style="margin-top:18px">Istanbul · November 2026 · 41.047° N 29.027° E</div>
         <h1>Umang's Bachelor</h1>
@@ -840,7 +893,7 @@ VIEWS.mission = {
       </div>
     </section>`;
   },
-  mount() { tickCountdown(); this.composer(); },
+  mount() { tickCountdown(); this.composer(); drawSkylines(); },
   composer() {
     const box = $("#composer"); if (!box) return;
     if (!Store.owner && Store.mode !== "local") { box.innerHTML = ""; return; }
@@ -883,6 +936,47 @@ VIEWS.mission = {
       </dl>`;
   },
 };
+function drawSkylines() {
+  const css = getComputedStyle(document.documentElement);
+  const sky = css.getPropertyValue("--sky").trim() || "#16264a";
+  const moon = css.getPropertyValue("--gold").trim() || "#e2ad4a";
+  $$("canvas.skyline").forEach(cv => {
+    const w = cv.clientWidth, hgt = cv.clientHeight; if (!w || !hgt) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = w * dpr; cv.height = hgt * dpr;
+    const c = cv.getContext("2d"); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, hgt);
+    const base = hgt - 6, u = hgt / 100;
+    // crescent moon (cut a circle out of a circle)
+    const mx = w * .86, my = hgt * .22, mr = 11 * u;
+    c.fillStyle = moon; c.beginPath(); c.arc(mx, my, mr, 0, Math.PI * 2); c.fill();
+    c.globalCompositeOperation = "destination-out"; c.beginPath(); c.arc(mx + mr * .38, my - mr * .12, mr * .84, 0, Math.PI * 2); c.fill();
+    c.globalCompositeOperation = "source-over";
+    c.fillStyle = sky;
+    const rect = (x, y, ww, hh) => c.fillRect(x, y, ww, hh);
+    const dome = (x, r, lift = 0) => { c.beginPath(); c.ellipse(x, base - lift, r, r * .92, 0, Math.PI, 0); c.fill(); };
+    const minaret = (x, hh) => { const mw = 2.6 * u; rect(x - mw / 2, base - hh, mw, hh); rect(x - mw, base - hh * .72, mw * 2, 1.8 * u);
+      c.beginPath(); c.moveTo(x - mw / 2, base - hh); c.lineTo(x, base - hh - 14 * u); c.lineTo(x + mw / 2, base - hh); c.fill(); };
+    const mosque = (x, s) => { rect(x - 34 * s * u, base - 16 * s * u, 68 * s * u, 16 * s * u);
+      dome(x - 20 * s * u, 10 * s * u, 16 * s * u); dome(x + 20 * s * u, 10 * s * u, 16 * s * u); dome(x, 22 * s * u, 18 * s * u);
+      rect(x - 1, base - 52 * s * u, 2, 12 * s * u);
+      [-44, 44].forEach(dx => minaret(x + dx * s * u, 62 * s * u)); };
+    const galata = x => { rect(x - 6 * u, base - 58 * u, 12 * u, 58 * u); rect(x - 8 * u, base - 62 * u, 16 * u, 5 * u);
+      c.beginPath(); c.moveTo(x - 8 * u, base - 62 * u); c.lineTo(x, base - 86 * u); c.lineTo(x + 8 * u, base - 62 * u); c.fill(); };
+    // waterline and low city
+    rect(0, base, w, hgt - base);
+    for (let x = 0; x < w; x += 18 * u) rect(x, base - (6 + ((x * 7) % 11)) * u, 16 * u, (6 + ((x * 7) % 11)) * u);
+    const scale = Math.min(1.25, Math.max(.7, w / 900));
+    mosque(w * .2, scale); mosque(w * .48, scale * .82); galata(w * .68);
+    [w * .06, w * .34, w * .6].forEach(x => minaret(x, 44 * u));
+    // Bosphorus bridge on the right
+    const bx = w * .78, bw = w * .2; c.strokeStyle = sky; c.lineWidth = Math.max(1, u * .9);
+    rect(bx, base - 40 * u, 2.4 * u, 40 * u); rect(bx + bw, base - 40 * u, 2.4 * u, 40 * u); rect(bx - 10 * u, base - 14 * u, bw + 22 * u, 2.4 * u);
+    c.beginPath(); c.moveTo(bx, base - 40 * u); c.quadraticCurveTo(bx + bw / 2, base - 4 * u, bx + bw, base - 40 * u); c.stroke();
+  });
+}
+window.addEventListener("resize", () => { clearTimeout(drawSkylines.t); drawSkylines.t = setTimeout(drawSkylines, 150); });
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => { drawSkylines(); if (current === "map") route(true); });
+
 let cdTimer = null;
 // Wedding date lives in config.js (weddingAt, weddingPlace) so it can change without touching code.
 const T_WEDDING = Date.parse((window.BP_CONFIG || {}).weddingAt || "");
@@ -1060,6 +1154,85 @@ VIEWS.itinerary = {
       <div class="wear"><b>Dress code</b>${h(d.wear)}</div>
       ${route ? `<div><a class="btn small" href="${route}" target="_blank" rel="noopener">Open today's route in Google Maps</a></div>` : ""}
     </article>`;
+  },
+  update() {},
+};
+
+/* ---------- THE MAP ---------- */
+let mapDay = "all", leafletMap = null, mapLayer = null, mapMarkers = [];
+function loadLeaflet() {
+  if (window.L) return Promise.resolve(window.L);
+  if (loadLeaflet.p) return loadLeaflet.p;
+  loadLeaflet.p = new Promise((res, rej) => {
+    const css = document.createElement("link"); css.rel = "stylesheet";
+    css.href = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"; document.head.appendChild(css);
+    const s = document.createElement("script"); s.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+    s.onload = () => res(window.L); s.onerror = () => { loadLeaflet.p = null; rej(new Error("Map library didn't load.")); };
+    document.head.appendChild(s);
+  });
+  return loadLeaflet.p;
+}
+function mapStops() {
+  const out = [];
+  DAYS.forEach(d => d.items.forEach(([time, plan, q]) => {
+    if (q && PLACES[q] && !(q === "Istanbul Airport" && out.some(o => o.q === q && o.day === d.n))) out.push({day: d.n, label: d.label, time, plan, q, ll: PLACES[q]});
+  }));
+  return out;
+}
+const isDark = () => getComputedStyle(document.documentElement).colorScheme.includes("dark");
+VIEWS.map = {
+  shell() {
+    return `<section class="view">
+      <div class="head"><div class="eyebrow">Area of operations</div><h2>The Map</h2>
+      <p>Every stop from the itinerary, colored by day. Tap a pin for the plan and directions. Pins are approximate; Google Maps has the exact spot.</p></div>
+      <div class="chips" id="map-days">${[["all", "All days"], ...DAYS.map(d => [String(d.n), `Day ${d.n} · ${d.dow}`])].map(([v, l]) =>
+        `<button class="chip" type="button" data-md="${v}" aria-pressed="${mapDay === v}">${l}</button>`).join("")}</div>
+      <div class="row"><button class="btn small" type="button" id="map-city">Istanbul</button><button class="btn small" type="button" id="map-all">Whole trip (Sapanca + Thrace)</button><button class="btn small" type="button" id="map-base">Base</button></div>
+      <div class="map-box" id="map"><div class="empty" style="border:0;height:100%;display:grid;place-items:center">Loading map…</div></div>
+      <div class="map-list" id="map-list"></div>
+    </section>`;
+  },
+  async mount() {
+    $$("[data-md]").forEach(b => b.onclick = () => { mapDay = b.dataset.md; $$("[data-md]").forEach(x => x.setAttribute("aria-pressed", x === b)); this.draw(true); });
+    try { await loadLeaflet(); } catch (e) { $("#map").innerHTML = `<div class="empty" style="border:0">${h(e.message)} Check your connection and reload.</div>`; return; }
+    if (!$("#map")) return; // navigated away while loading
+    if (leafletMap) { leafletMap.remove(); leafletMap = null; }
+    $("#map").innerHTML = "";
+    leafletMap = L.map("map", {zoomControl: true, attributionControl: true, scrollWheelZoom: false}).setView([41.03, 28.99], 12);
+    const style = isDark() ? "dark_all" : "light_all";
+    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}{r}.png`, {
+      maxZoom: 19, subdomains: "abcd",
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
+    }).addTo(leafletMap);
+    mapLayer = L.layerGroup().addTo(leafletMap);
+    $("#map-city").onclick = () => leafletMap.fitBounds([[40.98, 28.95], [41.08, 29.05]]);
+    $("#map-all").onclick = () => this.fit(true);
+    $("#map-base").onclick = () => leafletMap.setView(BASE_LATLNG, 15);
+    this.draw(true);
+  },
+  fit(all) {
+    const pts = (all ? mapStops() : mapMarkers.map(m => m.s)).map(s => s.ll).concat([BASE_LATLNG]);
+    if (pts.length) leafletMap.fitBounds(pts, {padding: [30, 30], maxZoom: 15});
+  },
+  draw(fit) {
+    if (!leafletMap) return;
+    mapLayer.clearLayers(); mapMarkers = [];
+    const icon = (txt, color, cls = "") => L.divIcon({className: "", iconSize: [26, 26], iconAnchor: [13, 13],
+      html: `<span class="map-pin ${cls}" style="${color ? "background:" + color : ""}">${txt}</span>`});
+    L.marker(BASE_LATLNG, {icon: icon("★", "", "base"), zIndexOffset: 1000}).addTo(mapLayer)
+      .bindPopup(`<b>Base · Airbnb</b><br>${h(BASE)}<br><a href="${mapUrl(BASE)}" target="_blank" rel="noopener">Directions ↗</a>`);
+    const stops = mapStops().filter(s => mapDay === "all" || String(s.day) === mapDay);
+    stops.forEach(s => {
+      const m = L.marker(s.ll, {icon: icon(s.day, DAY_COLORS[s.day - 1])}).addTo(mapLayer)
+        .bindPopup(`<b>Day ${s.day} · ${h(s.time)}</b><br>${h(s.plan)}<br><span style="opacity:.7">${h(s.label)}</span><br><a href="${mapUrl(s.q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>`);
+      mapMarkers.push({m, s});
+    });
+    $("#map-list").innerHTML = stops.map((s, i) => `<button class="map-item" type="button" data-mi="${i}">
+      <span class="map-pin" style="background:${DAY_COLORS[s.day - 1]}">${s.day}</span>
+      <span style="min-width:0"><b>${h(s.plan)}</b><br><span class="muted" style="font-size:12px">${h(s.label)} · ${h(s.time)}</span></span>
+      <span class="muted" style="font-size:12px">Show ↗</span></button>`).join("");
+    $$("[data-mi]").forEach(b => b.onclick = () => { const {m} = mapMarkers[+b.dataset.mi]; leafletMap.setView(m.getLatLng(), 15); m.openPopup(); $("#map").scrollIntoView({behavior: "smooth", block: "center"}); });
+    if (fit) this.fit(false);
   },
   update() {},
 };
