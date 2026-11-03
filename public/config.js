@@ -12,3 +12,7 @@ window.BP_CONFIG = {
 window.BP_CONFIG.weddingAt = "2026-12-19T00:00:00+07:00";  // Hua Hin local time (UTC+7). Add the ceremony time when known.
 window.BP_CONFIG.weddingPlace = "Hua Hin, Thailand";
 window.BP_CONFIG.weddingTz = "Asia/Bangkok";  // shows the wedding date as it is in Hua Hin
+
+// No sign-in: whoever picks this crew member on "Who are you?" gets the organizer tools
+// (write sealed personal messages, unseal awards early). One of: umang, sagar, dev, abhi, nick.
+window.BP_CONFIG.organizer = "abhi";

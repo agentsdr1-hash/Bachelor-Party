@@ -597,6 +597,8 @@ const CFG = window.BP_CONFIG || {};
 const SB = (CFG.supabaseUrl && CFG.supabaseAnonKey && !/YOUR_/.test(CFG.supabaseUrl) && window.supabase)
   ? window.supabase.createClient(CFG.supabaseUrl, CFG.supabaseAnonKey) : null;
 const BUCKET = "vault";
+// No sign-in: whoever picks the organizer's name gets the organizer tools (sealed messages, unseal awards).
+const isOrganizer = () => !!ME && ME === (CFG.organizer || "");
 const MAX_UPLOAD = 50 * 1024 * 1024;
 
 const Store = {
@@ -608,13 +610,8 @@ const Store = {
       showBanner("Preview mode: Supabase isn't configured, so everything is saved in this browser only. See README to connect it.");
       changed(); paintStatus(); return true;
     }
-    const {data: {session}} = await SB.auth.getSession();
-    if (!session) { this.mode = "signed-out"; paintStatus(); showGate(); return false; }
-    const {data: member, error} = await SB.from("crew_members").select("crew_key,is_owner").eq("email", session.user.email.toLowerCase()).maybeSingle();
-    if (error || !member) { await SB.auth.signOut(); this.mode = "signed-out"; showGate("That email isn't on the crew list. Ask the organizer to add it."); return false; }
-    this.member = member; this.owner = !!member.is_owner;
-    ME = member.crew_key;
     this.mode = "live";
+    this.owner = isOrganizer();
     await this.loadAll();
     this.subscribe();
     paintStatus(); return true;
@@ -665,7 +662,7 @@ const Store = {
     D[name] = D[name].filter(x => x.id !== id); changed();
     if (doc && doc.path) SB.storage.from(BUCKET).remove([doc.path]).catch(() => {});
   },
-  canUpload() { return this.mode !== "signed-out"; },
+  canUpload() { return true; },
   async upload(file) {
     const isVideo = file.type.startsWith("video/");
     if (this.mode === "live") {
@@ -707,57 +704,6 @@ async function signPending() {
   changed();
 }
 
-/* Sign-in gate. Who can sign in, and with which password, is set in crew.json on GitHub. */
-const PW_STYLE = "background:var(--panel-2);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;color:var(--ink);font-size:15px";
-// Public home page: anyone with the link sees the title and both countdowns.
-// Everything else (itinerary, address, crew, photos, dispatches) stays behind sign-in.
-function gateShell(inner) {
-  $("#tabs").innerHTML = ""; current = null;
-  $("#view").innerHTML = `<section class="gate">
-    <div class="hero">
-      <canvas class="skyline" aria-hidden="true"></canvas>
-      <span class="stamp">Classified · Crew only</span>
-      <div class="eyebrow" style="margin-top:18px">Operation Bosphorus · November 2026</div>
-      <h1>Umang's Bachelor</h1>
-      <p class="sub">Nine days in Istanbul, then the wedding in Hua Hin.</p>
-      <div class="gate-facts"><span class="pill turq">Istanbul · Nov 14–22</span><span class="pill" style="color:var(--gold)">Wedding · Dec 19</span></div>
-      <div class="cds">
-        <div class="cd-block"><div class="cd-label" id="cd-label"></div><div class="countdown" id="cd"></div>
-          <div class="cd-sub">Istanbul · Sat Nov 14 – Sun Nov 22, 2026</div></div>
-        <div class="cd-block wed"><div class="cd-label" id="wd-label"></div><div class="countdown" id="wd"></div>
-          <div class="cd-sub" id="wd-sub"></div></div>
-      </div>
-    </div>
-    <aside class="gate-side">${inner}</aside></section>`;
-  tickCountdown(); drawSkylines();
-}
-function showGate(msg = "") {
-  gateShell(`<form class="panel stack" id="gate-form">
-      <div><div class="eyebrow">Crew sign-in</div><h3 style="margin-top:6px">Agents only</h3></div>
-      ${msg ? `<p class="banner warn" style="margin:0">${h(msg)}</p>` : ""}
-      <label class="f">Email<input type="text" id="g-email" inputmode="email" autocomplete="email" required></label>
-      <label class="f">Password<span class="pw-wrap"><input type="password" id="g-pass" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" required style="${PW_STYLE}"><button class="link pw-eye" type="button" data-eye="g-pass">Show</button></span></label>
-      <div><button class="btn primary" type="submit" id="g-in">Sign in</button></div>
-      <p class="muted" style="font-size:13px">Use the email and password the organizer gave you. Forgot it? Ask the organizer.</p>
-    </form>`);
-  $("#gate-form").onsubmit = async e => {
-    e.preventDefault();
-    const email = $("#g-email").value.trim().toLowerCase(), password = $("#g-pass").value.trim();
-    if (!email || !password) { toast("Enter your email and password."); return; }
-    $("#g-in").disabled = true;
-    let r, j;
-    try {
-      r = await fetch("/api/login", {method: "POST", headers: {"content-type": "application/json"}, body: JSON.stringify({email, password})});
-      j = await r.json().catch(() => ({error: r.status === 404 ? "The sign-in server isn't deployed yet. Redeploy on Vercel." : "Unexpected server response."}));
-    } catch { j = {error: "Couldn't reach the server. Check your connection."}; r = {ok: false}; }
-    if (!r.ok) { $("#g-in").disabled = false; toast(j.error || "Sign-in failed."); return; }
-    const {error} = await SB.auth.setSession({access_token: j.access_token, refresh_token: j.refresh_token});
-    $("#g-in").disabled = false;
-    if (error) { toast(error.message); return; }
-    if (await Store.init()) route(true);
-  };
-}
-
 function shrink(file, max, q) {
   return new Promise((res, rej) => {
     const url = URL.createObjectURL(file); const img = new Image();
@@ -778,29 +724,21 @@ function shrink(file, max, q) {
 let ME = LS.get("bp:me", null);
 function needMe() { if (ME) return true; pickMe(); return false; }
 function pickMe() {
-  if (Store.mode === "live") {
-    openDialog(`<div class="dlg"><div class="eyebrow">Signed in</div><h3>${h(crewBy(ME)?.name || "")}</h3>
-      <p class="muted">Your votes, uploads and points are signed with this account.</p>
-      <p class="muted" style="font-size:13px">To change your password, ask the organizer.</p>
-      <div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>Close</button><button class="btn danger" type="button" id="sign-out">Sign out</button></div></div>`);
-    $("#sign-out").onclick = async () => { await SB.auth.signOut(); location.reload(); };
-    return;
-  }
   openDialog(`<div class="dlg">
     <div class="eyebrow">Identify yourself</div>
     <h3>Who's on this phone?</h3>
     <p class="muted">Your votes, uploads and points are signed with this name. Saved on this device only.</p>
     <div class="who-grid">${CREW.map(c => `<button type="button" data-me="${c.key}" aria-pressed="${ME === c.key}">${avatar(c.key)}<span>${h(c.name)}</span></button>`).join("")}</div>
     <div class="row" style="justify-content:flex-end"><button class="btn" data-close type="button">Close</button></div></div>`);
-  $$("[data-me]", $("#dlg")).forEach(b => b.onclick = () => { ME = b.dataset.me; LS.set("bp:me", ME); closeDialog(); paintStatus(); route(true); toast(`Signed in as ${crewBy(ME).name}`); });
+  $$("[data-me]", $("#dlg")).forEach(b => b.onclick = () => { ME = b.dataset.me; LS.set("bp:me", ME); Store.owner = Store.mode === "live" && isOrganizer(); closeDialog(); paintStatus(); route(true); toast(`Signed in as ${crewBy(ME).name}`); });
 }
 let liveUp = true;
 function paintStatus(up) {
   if (typeof up === "boolean") liveUp = up;
   const dot = $("#live-dot"), lab = $("#live-label");
   dot.classList.toggle("live", Store.mode === "live" && liveUp);
-  lab.textContent = Store.mode === "live" ? (liveUp ? "Live" : "Reconnecting") : Store.mode === "local" ? "Preview" : Store.mode === "signed-out" ? "Signed out" : "Connecting";
-  $("#me-chip").hidden = Store.mode === "signed-out";
+  lab.textContent = Store.mode === "live" ? (liveUp ? "Live" : "Reconnecting") : Store.mode === "local" ? "Preview" : "Connecting";
+
   $("#me-chip").innerHTML = ME ? `${avatar(ME)}<span>${h(crewBy(ME).name)}</span>` : `<span class="av">?</span><span>Who are you?</span>`;
 }
 
@@ -1502,7 +1440,6 @@ VIEWS.leaderboard = {
    ============================================================ */
 let current = null, raf = 0;
 function route(force = false) {
-  if (Store.mode === "signed-out") return;
   const k = (location.hash || "").slice(1);
   const name = VIEWS[k] ? k : "mission";
   if (name === current && !force) return;
