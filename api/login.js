@@ -41,14 +41,14 @@ function crewList() {
 
 // Make crew_members match crew.json exactly (who is on the crew, who is organizer).
 async function syncCrewMembers(list) {
-  const rows = await sb("/rest/v1/crew_members?select=crew_key,email,is_owner,password_set");
+  const rows = await sb("/rest/v1/crew_members?select=crew_key,email,is_owner");
   const want = Object.fromEntries(KEYS.map(k => {
     const c = list.find(x => x.crew === k);
     return [k, {email: c ? c.email : `${k}@example.com`, is_owner: c ? c.organizer : false}];
   }));
   const changed = KEYS.filter(k => {
     const r = rows.find(x => x.crew_key === k);
-    return !r || r.email !== want[k].email || !!r.is_owner !== want[k].is_owner || !r.password_set;
+    return !r || r.email !== want[k].email || !!r.is_owner !== want[k].is_owner;
   });
   if (!changed.length) return;
   // Park changed rows on placeholder emails first, so an email can move between people.
@@ -61,7 +61,7 @@ async function syncCrewMembers(list) {
   for (const k of changed) {
     await sb("/rest/v1/crew_members?on_conflict=crew_key", {method: "POST",
       headers: {prefer: "resolution=merge-duplicates,return=minimal"},
-      body: JSON.stringify({crew_key: k, email: want[k].email, is_owner: want[k].is_owner, password_set: true})});
+      body: JSON.stringify({crew_key: k, email: want[k].email, is_owner: want[k].is_owner})});
   }
 }
 

@@ -555,7 +555,7 @@ const Store = {
     }
     const {data: {session}} = await SB.auth.getSession();
     if (!session) { this.mode = "signed-out"; paintStatus(); showGate(); return false; }
-    const {data: member, error} = await SB.from("crew_members").select("crew_key,is_owner,password_set").eq("email", session.user.email.toLowerCase()).maybeSingle();
+    const {data: member, error} = await SB.from("crew_members").select("crew_key,is_owner").eq("email", session.user.email.toLowerCase()).maybeSingle();
     if (error || !member) { await SB.auth.signOut(); this.mode = "signed-out"; showGate("That email isn't on the crew list. Ask the organizer to add it."); return false; }
     this.member = member; this.owner = !!member.is_owner;
     ME = member.crew_key;
