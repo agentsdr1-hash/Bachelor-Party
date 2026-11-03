@@ -118,6 +118,7 @@ textarea{min-height:84px;resize:vertical}
 .map-box{position:relative;z-index:0;isolation:isolate;height:min(68vh,620px);min-height:340px;border-radius:var(--r);overflow:hidden;border:1px solid var(--line);background:var(--panel-2)}
 @media (max-width:560px){.map-box{height:56vh}}
 .map-box .leaflet-control-attribution{font-size:10px}
+.map-box.dark .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(.9) saturate(.6)}
 .map-pin{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 12px/1 var(--f-mono);color:#fff;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.45)}
 .map-pin.base{width:30px;height:30px;border-radius:6px;background:var(--coral);font-size:14px}
 .map-list{display:grid;gap:6px}
@@ -1134,21 +1135,26 @@ VIEWS.map = {
     if (leafletMap) { leafletMap.stop(); leafletMap.off(); leafletMap.remove(); leafletMap = null; }
     $("#map").innerHTML = "";
     leafletMap = L.map("map", {zoomControl: true, attributionControl: true, scrollWheelZoom: false}).setView([41.03, 28.99], 12);
-    const style = isDark() ? "dark_all" : "light_all";
-    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${style}/{z}/{x}/{y}{r}.png`, {
-      maxZoom: 19, subdomains: "abcd",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" target="_blank" rel="noopener">CARTO</a>'
+    $("#map").classList.toggle("dark", isDark());
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19, referrerPolicy: "strict-origin-when-cross-origin", // OSM requires a referrer
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
     }).addTo(leafletMap);
     mapLayer = L.layerGroup().addTo(leafletMap);
     $("#map-city").onclick = () => leafletMap.fitBounds([[40.98, 28.95], [41.08, 29.05]]);
     $("#map-all").onclick = () => this.fit(true);
     $("#map-base").onclick = () => leafletMap.setView(BASE_LATLNG, 15);
     this.draw(false);
-    // Leaflet needs the box's real size; it is only known after layout.
-    const box = $("#map"), m = leafletMap;
-    if (window.ResizeObserver) { this.ro = new ResizeObserver(() => { if (leafletMap === m) m.invalidateSize(); }); this.ro.observe(box); }
-    requestAnimationFrame(() => { if (leafletMap !== m) return; m.invalidateSize(); this.fit(false, false); });
-    setTimeout(() => { if (leafletMap === m) m.invalidateSize(); }, 400);
+    // Leaflet needs the box's real size, which phones only know after layout.
+    // Fitting to a zero-size box zooms all the way in, so wait for a real size.
+    const box = $("#map"), m = leafletMap; let fitted = false;
+    const settle = () => {
+      if (leafletMap !== m) return;
+      m.invalidateSize();
+      if (!fitted && box.clientWidth > 50 && box.clientHeight > 50) { fitted = true; this.fit(false, false); }
+    };
+    if (window.ResizeObserver) { this.ro = new ResizeObserver(settle); this.ro.observe(box); }
+    requestAnimationFrame(settle); setTimeout(settle, 300); setTimeout(settle, 1000);
   },
   fit(all, animate = true) {
     const pts = (all ? mapStops() : mapMarkers.map(m => m.s)).map(s => s.ll).concat([BASE_LATLNG]);
