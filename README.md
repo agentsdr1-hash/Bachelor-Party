@@ -1,64 +1,55 @@
 # Operation Bosphorus: Umang's Bachelor (Istanbul, Nov 14–22, 2026)
 
-Static site (`index.html`, no build step). Hosted on **Vercel**; votes, points, uploads and logins on **Supabase** (free plan).
+Crew hub for the trip: countdowns to the trip and the wedding, sealed daily dispatches, crew profiles, intel, itinerary with maps, challenges, photo vault, live polls and leaderboard.
 
-| Section | What it does |
-|---|---|
-| The Mission | Countdown to wheels-down at IST, trip facts, sealed daily dispatches (unseal 06:00 Istanbul time), organizer-only personal messages |
-| The Crew | Five profiles: codename, one-liner, photo, flights, nights in Istanbul, live points |
-| The Intel | Flights, nightly headcount, base + travel times, weather/prayer times, packing list (per device), shared bookings checklist, items to confirm, rain plan, risks |
-| The Itinerary | Day picker (auto-selects today), timeline with map links, full-day Google Maps route, attractions, wine route |
-| The Challenges | 20 challenges (daily / dares / competitions) + crew-proposed dares; claim, undo, strike, record winners |
-| The Vault | Photo/video uploads tagged by trip day, lightbox, inside-jokes wall |
-| The Polls | Live voting; anyone can open a vote; you can only cast your own vote |
-| The Leaderboard | Challenges + daily drops (5 pts/day) + groom's decrees; awards unseal Sun Nov 22 06:00; punishment draw |
+- **Hosting:** Vercel (`public/` is the website, `api/` the server functions)
+- **Logins:** controlled from GitHub in `crew.json`
+- **Data and photos:** Supabase (free plan), used only as storage
 
-## Setup (about 20 minutes)
+## Who can sign in: `crew.json`
 
-### 1. Supabase (data, photos, login)
-1. Create a free project at supabase.com. Region: Frankfurt (closest to Istanbul).
-2. Open `supabase/schema.sql`, replace the five `@example.com` emails with the crew's real emails (lowercase), and uncomment the `is_owner` line for the organizer.
-3. Supabase → **SQL Editor** → paste the whole file → **Run**.
-4. Run `supabase/002_invite_only.sql` the same way (one-time-password support).
-5. Supabase → **Authentication → Sign In / Providers**: turn **off "Allow new users to sign up"**, and under **Email** turn **off "Confirm email"**.
-6. Supabase → **Project Settings → API Keys**: copy the **Project URL** and the **publishable** key (`sb_publishable_…`) into `config.js`. Never use the secret/service_role key.
+```json
+{
+  "crew": [
+    { "crew": "abhi", "email": "abhishekdsouza93@gmail.com", "passwordHash": "pbkdf2$sha256$...", "organizer": true }
+  ]
+}
+```
 
-### 2. Vercel (hosting)
-1. vercel.com → **Add New → Project** → import `agentsdr1-hash/Bachelor-Party`.
-2. **Root Directory:** leave blank. **Framework preset:** Other. No build command.
-3. Deploy. You'll get `https://<name>.vercel.app`. Each push to the repo redeploys it.
+- `crew`: one of `umang`, `sagar`, `dev`, `abhi`, `nick` (whose profile, votes and points they get)
+- `email`: what they type to sign in
+- `passwordHash`: their password, hashed. Make one at **`https://<your-site>/tools/hash.html`** (runs on your phone; nothing is sent), or `node tools/hash-password.js "password"`.
+- `organizer`: `true` for whoever writes the sealed personal messages and can unseal awards early
 
-No GitHub? Netlify Drop (app.netlify.com/drop) accepts this folder dragged in directly.
+**Add a person:** add an entry → Commit. **Change a password:** replace their `passwordHash` → Commit. **Remove a person:** delete their entry → Commit; they lose access on the next sign-in by anyone. Vercel redeploys about 30 s after each commit.
 
-### 3. Turn on the Access tab (one time)
-The organizer manages logins from the site's **Access** tab. It runs through `api/admin.js` on Vercel, which needs Supabase's secret key. The key stays on the server and never reaches the page.
-1. Supabase → **Project Settings → API Keys** → **Secret keys** → copy the `sb_secret_…` key (or the legacy `service_role` key).
-2. Vercel → your project → **Settings → Environment Variables**, add:
-   - `SUPABASE_URL` = your Project URL
-   - `SUPABASE_SECRET_KEY` = the secret key
-3. Vercel → **Deployments** → latest → **⋯ → Redeploy** (environment variables only apply to new deploys).
-4. Make sure your own row in `crew_members` has `is_owner = true` (set in `schema.sql`).
+Never write a plain password in this file. Keep the repository **private**: a hash of a short password like `test123` can be cracked in seconds by anyone who can read the file.
 
-### 4. Crew onboarding (from the website)
-Sign in → **Access** tab (organizer only):
-- **Send invite:** enter their email; the site creates their login and shows a one-time password plus a ready-to-send message. Send the password by direct message.
-- **New one-time password:** for someone who forgot theirs.
-- **Save email:** change someone's email; their old login is replaced.
-- **Remove access:** signs them out for good until re-invited. Their votes, photos and points stay.
+## One-time setup
 
-On first sign-in each person must choose their own password. Anyone can change theirs from the account menu (top right).
+### Supabase (storage)
+1. Create a free project (region: Frankfurt).
+2. SQL Editor → run `supabase/schema.sql`, then `supabase/002_invite_only.sql`. The emails inside `schema.sql` don't matter any more; `crew.json` overwrites them on sign-in.
+3. Authentication → Sign In / Providers → turn off **Allow new users to sign up**.
+4. Project Settings → API Keys: put the Project URL and the **publishable** key in `public/config.js`.
 
-## How access works
-- Every table and the photo bucket are locked by row-level security to emails in `crew_members`.
-- The publishable key in `config.js` is meant to be public; it grants nothing without a crew login.
-- The secret key exists only as a Vercel environment variable, used by `api/admin.js`, which accepts requests only from the organizer's signed-in session.
-- Photos and videos live in a **private** bucket and are shown through signed links that expire after 7 days (renewed automatically).
-- Only you can cast your vote, delete your uploads and jokes, or upload into your own folder. Only the groom or organizer can issue point decrees. Only the organizer can write sealed messages.
+### Vercel
+1. Import the GitHub repo. Root Directory: blank. Preset: Other.
+2. Settings → Environment Variables:
+   - `SUPABASE_URL` = Project URL
+   - `SUPABASE_SECRET_KEY` = Supabase **secret** key (`sb_secret_…`). It lives only here, never in the repo.
+3. Redeploy.
 
-## Limits and known risks
-- **Free projects pause after 7 days with no activity.** If nobody opens the site before Nov 14, restore the project from the Supabase dashboard (one click). Opening the site once a week prevents it.
-- Free plan: 1 GB file storage, 50 MB per upload. Photos are resized to about 400 KB, so the limit is video. Keep long videos in a shared album.
-- The itinerary text, Airbnb address and sealed dispatches ship in the page code. The sign-in hides them from casual visitors, but someone with the URL could read them in the page source. The URL is excluded from search engines (`noindex`). Real secrets go in the organizer's personal messages, which are stored in Supabase.
+## How sign-in works
+1. The site sends email + password to `api/login.js`.
+2. It checks them against `crew.json`, syncs the crew list into Supabase, and opens a Supabase session for that person, using an internal password derived from the secret key that nobody needs to know.
+3. All data access is then enforced by Supabase row-level security (`supabase/schema.sql`): only crew can read, you can only vote as yourself, only the organizer writes sealed messages, and photos sit in a private bucket behind signed links.
 
-## Local preview
-Open `index.html` with `config.js` left at its placeholders: the site runs in preview mode and saves to that browser only.
+## Limits and risks
+- Free Supabase projects pause after 7 days with no activity. Open the site weekly before the trip, or restore it from the dashboard.
+- 1 GB file storage, 50 MB per upload. Keep long videos in a shared album.
+- Passwords can only be changed by editing `crew.json`; people can't change their own.
+- The itinerary, address and sealed dispatches are in the page code. The sign-in hides them from casual visitors, but they're readable to anyone who views the page source.
+
+## Wedding countdown
+Set in `public/config.js` (`weddingAt` with time zone offset, `weddingPlace`).
