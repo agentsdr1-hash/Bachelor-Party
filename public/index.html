@@ -904,22 +904,22 @@ function tickCountdown() {
     const done = (big, small) => `<div class="cd"><b>${big}</b><span>${small}</span></div>`;
     // Bachelor trip
     if (now < T_START) {
-      set("cd-label", "Bachelor trip · Istanbul"); set("cd-title", "Wheels down"); el.innerHTML = cdDigits(T_START - now);
+      set("cd-label", "Istanbul, Turkey"); set("cd-title", "Wheels down"); el.innerHTML = cdDigits(T_START - now);
       set("cd-sub", "Sat, Nov 14 · 6:00 AM at IST");
     } else if (now < T_END) {
-      set("cd-label", `Bachelor trip · Day ${tripDay() || "…"} of 9`); set("cd-title", "Mission live"); el.innerHTML = cdDigits(T_END - now);
+      set("cd-label", `Istanbul, Turkey · Day ${tripDay() || "…"} of 9`); set("cd-title", "Mission live"); el.innerHTML = cdDigits(T_END - now);
       set("cd-sub", "Ends Sun, Nov 22 · last flights out");
     } else {
-      set("cd-label", "Bachelor trip · Istanbul"); set("cd-title", "Mission complete"); el.innerHTML = "";
+      set("cd-label", "Istanbul, Turkey"); set("cd-title", "Mission complete"); el.innerHTML = "";
       set("cd-sub", "Nov 14–22, 2026");
     }
     // Wedding
     const wd = $("#wd");
     const wdate = Number.isFinite(T_WEDDING) ? new Intl.DateTimeFormat("en-US", {weekday: "short", month: "short", day: "numeric", year: "numeric", timeZone: (window.BP_CONFIG || {}).weddingTz || undefined}).format(T_WEDDING) : "";
-    set("wd-label", ["The wedding", WEDDING_PLACE.split(",")[0]].filter(Boolean).join(" · "));
+    set("wd-label", WEDDING_PLACE || "The wedding");
     if (!Number.isFinite(T_WEDDING)) { set("wd-title", "Umang says yes"); wd.innerHTML = done("TBA", "Date to be announced"); set("wd-sub", ""); }
-    else if (now < T_WEDDING) { set("wd-title", "Umang says yes"); wd.innerHTML = cdDigits(T_WEDDING - now); set("wd-sub", [wdate, WEDDING_PLACE].filter(Boolean).join(" · ")); }
-    else { set("wd-title", "He said yes"); wd.innerHTML = ""; set("wd-sub", [wdate, WEDDING_PLACE].filter(Boolean).join(" · ")); }
+    else if (now < T_WEDDING) { set("wd-title", "Umang says yes"); wd.innerHTML = cdDigits(T_WEDDING - now); set("wd-sub", wdate); }
+    else { set("wd-title", "He said yes"); wd.innerHTML = ""; set("wd-sub", wdate); }
   };
   paint(); cdTimer = setInterval(paint, 15000);
 }
