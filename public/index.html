@@ -149,21 +149,6 @@ textarea{min-height:84px;resize:vertical}
 .facts dt{font:700 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .facts dd{margin:6px 0 0;font-weight:600}
 
-/* dispatches */
-.dispatches{display:grid;gap:10px}
-.disp{border:1px solid var(--line);border-radius:var(--r);background:var(--panel);display:grid;grid-template-columns:64px 1fr;min-width:0}
-.disp .when{border-right:1px dashed var(--line);display:grid;place-items:center;text-align:center;padding:10px 4px}
-.disp .when b{font:800 26px/1 var(--f-display);display:block}
-.disp .when span{font:700 10px/1.2 var(--f-mono);letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
-.disp .body{padding:14px 16px;min-width:0;display:grid;gap:8px}
-.disp.sealed .body{color:var(--muted)}
-.disp.sealed .when b{color:var(--muted)}
-.disp.open{border-color:color-mix(in srgb,var(--coral) 55%,var(--line))}
-.seal{display:inline-flex;align-items:center;gap:8px;font:700 12px/1 var(--f-mono);letter-spacing:.1em;text-transform:uppercase}
-.seal i{width:14px;height:14px;background:currentColor;-webkit-mask:var(--star) center/contain no-repeat;mask:var(--star) center/contain no-repeat}
-.disp.open .seal{color:var(--coral)}
-.personal{border-left:3px solid var(--gold);padding:6px 0 6px 12px;font-style:italic}
-
 /* section index */
 .index{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
 .index a{display:grid;gap:4px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
@@ -528,8 +513,6 @@ const PUNISHMENTS = [
   "Writes and delivers a 2-minute toast at the wedding, approved by the crew.",
 ];
 
-/* Sealed dispatches. Encoded so nobody spoils them by skimming the page. */
-const SEALED = "W3siaWQiOiAicHJlIiwgImxhYmVsIjogIk9uZSB3ZWVrIG91dCIsICJiYWRnZSI6ICJULTd8ZGF5cyIsICJhdCI6ICIyMDI2LTExLTA3VDA2OjAwOjAwKzAzOjAwIiwgInRleHQiOiAiQWdlbnQsIHRoZSBvcGVyYXRpb24gaXMgb25lIHdlZWsgb3V0LiBGaXZlIG1lbiwgbmluZSBkYXlzLCBvbmUgZ3Jvb20uIE9yZGVyczogY29uZmlybSB5b3VyIGFpcnBvcnQgaXMgSVNULCBub3QgU0FXOyB0aGV5IGFyZSA5MCBtaW51dGVzIGFwYXJ0LiBQYWNrIGEgd2F0ZXJwcm9vZiBzaGVsbCwgb25lIHNoYXJwIG91dGZpdCB3aXRoIGxlYXRoZXIgc2hvZXMsIGFuZCB0cm91c2VycyB0aGF0IGNvdmVyIHRoZSBrbmVlLiBCcmluZyBhbiBFVSBUeXBlIEMvRiBhZGFwdGVyLiBGdXJ0aGVyIGluc3RydWN0aW9ucyBhcnJpdmUgb24gdGhlIGV2ZSBvZiBkZXBhcnR1cmUuIn0sIHsiaWQiOiAiZXZlIiwgImxhYmVsIjogIlRoZSBuaWdodCBiZWZvcmUiLCAiYmFkZ2UiOiAiRVZFfE5vdiAxMyIsICJhdCI6ICIyMDI2LTExLTEzVDE4OjAwOjAwKzAzOjAwIiwgInRleHQiOiAiRmluYWwgYnJpZWZpbmcuIFVtYW5nIGFuZCBTYWdhciB0b3VjaCBkb3duIGF0IElTVCBmcm9tIDY6MDAgQU0gdG9tb3Jyb3cuIFRyaXAgcnVsZSBub3cgaW4gZm9yY2U6IHNheSBcIsWeZXJlZmVcIiBiZWZvcmUgZXZlcnkgZmlyc3Qgc2lwLiBBbnlvbmUgY2F1Z2h0IGRyaW5raW5nIGJlZm9yZSBzYXlpbmcgaXQgYnV5cyB0aGUgbmV4dCByb3VuZC4ifSwgeyJpZCI6ICJkMSIsICJsYWJlbCI6ICJEYXkgMSDCtyBBcnJpdmFsIiwgImJhZGdlIjogIjF8U2F0IiwgImF0IjogIjIwMjYtMTEtMTRUMDY6MDA6MDArMDM6MDAiLCAidGV4dCI6ICJEYXkgMS4gUmVjb24gb25seS4gV2FsayB0aGUgT3J0YWvDtnkgd2F0ZXJmcm9udCwgZWF0IGEga3VtcGlyIHVuZGVyIHRoZSBicmlkZ2UsIHNjb3V0IMSwc3Rpa2xhbCB0b25pZ2h0LiBUaGUgcmVzdCBvZiB0aGUgY3JldyBsYW5kcyB0b21vcnJvdzsgdGhlIHR3byBvZiB5b3UgYXJlIHRoZSBhZHZhbmNlIHRlYW0uIFJlcG9ydCB0aGUgYmVzdCBsaXZlLW11c2ljIGJhciBpbiB0aGUgVmF1bHQuIn0sIHsiaWQiOiAiZDIiLCAibGFiZWwiOiAiRGF5IDIgwrcgT2xkIENpdHkgKyB3ZWxjb21lIG5pZ2h0IiwgImJhZGdlIjogIjJ8U3VuIiwgImF0IjogIjIwMjYtMTEtMTVUMDY6MDA6MDArMDM6MDAiLCAidGV4dCI6ICJEYXkgMi4gRnVsbCBjcmV3IGJ5IHRvbmlnaHQuIEJsdWUgTW9zcXVlIGF0IDExOjAwLCBiZWZvcmUgdGhlIG5vb24gcHJheWVyOiB0cm91c2VycywgY292ZXJlZCBzaG91bGRlcnMsIHNsaXAtb24gc2hvZXMuIEF0IHRoZSBtZXloYW5lIHRvbmlnaHQgdGhlIGdyb29tIGRvZXMgbm90IHBheSBmb3IgYSBzaW5nbGUgZ2xhc3Mgb2YgcmFrxLEuIFdob2V2ZXIgb3JkZXJzIHRoZSBmaXJzdCByb3VuZCBpbiBUdXJraXNoIHRha2VzIHRoZSBkYXJlLiJ9LCB7ImlkIjogImQzIiwgImxhYmVsIjogIkRheSAzIMK3IFNhcGFuY2EiLCAiYmFkZ2UiOiAiM3xNb24iLCAiYXQiOiAiMjAyNi0xMS0xNlQwNjowMDowMCswMzowMCIsICJ0ZXh0IjogIkRheSAzLiBUaGUgdmFuIHJvbGxzIGF0IDk6MzAgc2hhcnA7IHRoZSBsYXN0IG9uZSBhYm9hcmQgY2FycmllcyB0aGUgY29vbGVyLiBLYXJ0ZXBlIHN1bW1pdCBydW5zIDXigJM4wrBDIGNvbGRlciB0aGFuIHRoZSBjaXR5LiBTZWNyZXQgdGFzayBmb3IgZXZlcnlvbmUgZXhjZXB0IFVtYW5nOiBwcmVwYXJlIG9uZSA2MC1zZWNvbmQgc3RvcnkgYWJvdXQgdGhlIGdyb29tIGZvciB0aGUgYnVuZ2Fsb3cgZmlyZXBsYWNlIHRvbmlnaHQuIn0sIHsiaWQiOiAiZDQiLCAibGFiZWwiOiAiRGF5IDQgwrcgTGFrZSBtb3JuaW5nLCBJc3RhbmJ1bCBuaWdodCIsICJiYWRnZSI6ICI0fFR1ZSIsICJhdCI6ICIyMDI2LTExLTE3VDA2OjAwOjAwKzAzOjAwIiwgInRleHQiOiAiRGF5IDQuIFN1bnJpc2Ugb3ZlciB0aGUgbGFrZSBhdCA3OjIwIGZvciBhbnlvbmUgc3RpbGwgc3RhbmRpbmcuIEhhcmQgc3RvcCBsZWF2aW5nIGF0IG5vb24uIEhhbWFtIGF0IDQ6MzA6IHN1cnJlbmRlciB0byB0aGUga2VzZS4gRmVycnkgdG8gS2FkxLFrw7Z5IGF0IDY6MzAuIEEgc2VhZ3VsbCBpcyB3YWl0aW5nIGZvciB5b3VyIHNpbWl0LiJ9LCB7ImlkIjogImQ1IiwgImxhYmVsIjogIkRheSA1IMK3IFBhbGFjZSwgYmF6YWFyLCB5YWNodCIsICJiYWRnZSI6ICI1fFdlZCIsICJhdCI6ICIyMDI2LTExLTE4VDA2OjAwOjAwKzAzOjAwIiwgInRleHQiOiAiRGF5IDUuIFBhbGFjZSBkYXkgYW5kIERldidzIGxhc3QgbmlnaHQuIEhhcmVtIGZpcnN0IGF0IFRvcGthcMSxLCB0aGVuIHRoZSBiYXphYXI6IGhhZ2dsZSBoYXJkLCBwYXkgY2FzaC4gT24gdGhlIHlhY2h0IHRvbmlnaHQgZXZlcnkgYWdlbnQgZ2l2ZXMgRGV2IGEgc2VuZC1vZmYgdG9hc3QuIEtlZXAgaXQgc2hvcnQ7IGl0IGlzIGNvbGQgb24gdGhlIHdhdGVyLiJ9LCB7ImlkIjogImQ2IiwgImxhYmVsIjogIkRheSA2IMK3IFdpbmUgZGF5IiwgImJhZGdlIjogIjZ8VGh1IiwgImF0IjogIjIwMjYtMTEtMTlUMDY6MDA6MDArMDM6MDAiLCAidGV4dCI6ICJEYXkgNi4gVGhlIGdyb29tJ3MgZGF5LiBDaGF0ZWF1IE51enVuLCB0aGVuIEJhcmJhcmUuIEJsaW5kIHRhc3RpbmcgYXQgQmFyYmFyZTogbmFtZSB0aGUgZ3JhcGUgYmVmb3JlIHRoZSBzb21tZWxpZXIgZG9lcy4gVW1hbmcganVkZ2VzIGFuZCBjYW5ub3QgY29tcGV0ZS4gRGV2LCB5b3VyIHRheGkgbGVhdmVzIGF0IDE6MTUgUE0uIFNhZmUgZmxpZ2h0LCBhZ2VudC4ifSwgeyJpZCI6ICJkNyIsICJsYWJlbCI6ICJEYXkgNyDCtyBDbHViIG5pZ2h0IiwgImJhZGdlIjogIjd8RnJpIiwgImF0IjogIjIwMjYtMTEtMjBUMDY6MDA6MDArMDM6MDAiLCAidGV4dCI6ICJEYXkgNy4gUmVzdCwgdGhlbiB0aGUgbWFpbiBldmVudC4gT2xpZ2FyayBlbmZvcmNlcyB0aGUgZHJlc3MgY29kZTogY29sbGFyZWQgc2hpcnQgb3Igc2hhcnAga25pdCwgbGVhdGhlciBzaG9lcywgbm8gY2Fwcy4gVGhlIGJlc3QtZHJlc3NlZCB2b3RlIG9wZW5zIGF0IDkgUE0gaW4gVGhlIFBvbGxzLiJ9LCB7ImlkIjogImQ4IiwgImxhYmVsIjogIkRheSA4IMK3IEZpbmFsIG5pZ2h0IiwgImJhZGdlIjogIjh8U2F0IiwgImF0IjogIjIwMjYtMTEtMjFUMDY6MDA6MDArMDM6MDAiLCAidGV4dCI6ICJEYXkgOC4gRmluYWwgZnVsbCBuaWdodC4gU2FnYXIgbGVhdmVzIGZvciBJU1QgYXQgNTozMCBQTTsgc2F5IGdvb2RieWUgcHJvcGVybHkuIDM2MCBJc3RhbmJ1bCBhdCA4OjMwLiBBd2FyZHMgYXJlIHN0aWxsIHNlYWxlZC4gTGFzdCBjaGFuY2UgdG8gY2xpbWIgdGhlIGxlYWRlcmJvYXJkLiJ9LCB7ImlkIjogImQ5IiwgImxhYmVsIjogIkRheSA5IMK3IERlcGFydHVyZXMiLCAiYmFkZ2UiOiAiOXxTdW4iLCAiYXQiOiAiMjAyNi0xMS0yMlQwNjowMDowMCswMzowMCIsICJ0ZXh0IjogIkRheSA5LiBNaXNzaW9uIGNvbXBsZXRlLiBUaGUgbGVhZGVyYm9hcmQgaXMgZmluYWwgYW5kIHRoZSBhd2FyZHMgYXJlIHVuc2VhbGVkLiBMYXN0LXBsYWNlIGFnZW50OiB5b3VyIHB1bmlzaG1lbnQgaXMgd2FpdGluZyBvbiBUaGUgTGVhZGVyYm9hcmQuIFRyYXZlbCBzYWZlLiBOZXh0IG1pc3Npb246IHRoZSB3ZWRkaW5nLiJ9XQ==";
 
 /* ============================================================
    UTILITIES
@@ -548,11 +531,6 @@ const mapUrl = q => "https://www.google.com/maps/search/?api=1&query=" + encodeU
 const crewBy = k => CREW.find(c => c.key === k);
 const crewIdx = k => CREW.findIndex(c => c.key === k);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-function decodeSealed() {
-  try { const bin = atob(SEALED); const bytes = Uint8Array.from(bin, c => c.charCodeAt(0)); return JSON.parse(new TextDecoder().decode(bytes)); }
-  catch { return []; }
-}
-const DISPATCHES = decodeSealed();
 
 function avatar(key, cls = "") {
   const c = crewBy(key); if (!c) return `<span class="av ${cls}">?</span>`;
@@ -770,7 +748,7 @@ const awardsOpen = () => Date.now() >= T_AWARDS || !!settings().reveal;
    ============================================================ */
 const VIEWS = {};
 const ORDER = [
-  ["mission","The Mission","Countdown, dates, sealed dispatches"],
+  ["mission","The Mission","Countdowns, dates, crew pulse"],
   ["crew","The Crew","Profiles, nicknames, photos"],
   ["intel","The Intel","Flights, base, logistics, packing"],
   ["itinerary","The Itinerary","Nine days, times and maps"],
@@ -805,34 +783,13 @@ VIEWS.mission = {
         <div><dt>Weather</dt><dd>12–15°C, rain likely, sunset ≈ 4:50 PM</dd></div>
         <div><dt>Party nights</dt><dd>Sun · Mon · Tue · Wed · Fri · Sat</dd></div>
       </dl>
-      <div class="grid g2">
-        <div class="stack">
-          <div class="head"><div class="eyebrow">Sealed dispatches</div><h2>Orders by the day</h2>
-          <p>Each dispatch unseals at its time, Istanbul clock. No peeking.</p></div>
-          <div class="dispatches" id="dispatches"></div>
-        </div>
-        <div class="stack" style="align-content:start">
-          <div class="panel" id="pulse"></div>
-          <div class="index">${ORDER.slice(1).map(([k, t, s]) => `<a href="#${k}"><b>${t}</b><span>${s}</span></a>`).join("")}</div>
-        </div>
-      </div>
+      <div class="panel" id="pulse"></div>
+      <div class="index">${ORDER.slice(1).map(([k, t, s]) => `<a href="#${k}"><b>${t}</b><span>${s}</span></a>`).join("")}</div>
     </section>`;
   },
   mount() { tickCountdown(); drawSkylines(); },
   update() {
     const now = Date.now();
-    $("#dispatches").innerHTML = DISPATCHES.map(d => {
-      const open = now >= Date.parse(d.at);
-      const personal = D.secrets.find(x => x.id === d.id);
-      const [big, small] = d.badge.split("|");
-      return `<article class="disp ${open ? "open" : "sealed"}">
-        <div class="when"><div><b>${h(big)}</b><span>${h(small)}</span></div></div>
-        <div class="body">
-          <div class="seal"><i></i>${open ? "Unsealed" : "Sealed · opens " + h(fmtTime(Date.parse(d.at)))}</div>
-          ${open ? `<p>${h(d.text)}</p>${personal ? `<p class="personal">${h(personal.text)}</p>` : ""}`
-                 : `<p>${h(d.label)}${personal ? " · includes a personal message" : ""}</p>`}
-        </div></article>`;
-    }).join("");
     const sc = scores(), lead = sc[0];
     const day = tripDay();
     const openPolls = D.polls.filter(p => !p.closed).length;
@@ -904,13 +861,13 @@ function tickCountdown() {
     const done = (big, small) => `<div class="cd"><b>${big}</b><span>${small}</span></div>`;
     // Bachelor trip
     if (now < T_START) {
-      set("cd-label", "Istanbul, Turkey"); set("cd-title", "Wheels down"); el.innerHTML = cdDigits(T_START - now);
-      set("cd-sub", "Sat, Nov 14 · 6:00 AM at IST");
+      set("cd-label", "Istanbul, Turkey"); set("cd-title", "Umang's last hurrah"); el.innerHTML = cdDigits(T_START - now);
+      set("cd-sub", "Sat, Nov 14, 2026");
     } else if (now < T_END) {
-      set("cd-label", `Istanbul, Turkey · Day ${tripDay() || "…"} of 9`); set("cd-title", "Mission live"); el.innerHTML = cdDigits(T_END - now);
-      set("cd-sub", "Ends Sun, Nov 22 · last flights out");
+      set("cd-label", `Istanbul, Turkey · Day ${tripDay() || "…"} of 9`); set("cd-title", "Last hurrah: live"); el.innerHTML = cdDigits(T_END - now);
+      set("cd-sub", "Until Sun, Nov 22, 2026");
     } else {
-      set("cd-label", "Istanbul, Turkey"); set("cd-title", "Mission complete"); el.innerHTML = "";
+      set("cd-label", "Istanbul, Turkey"); set("cd-title", "Hurrah complete"); el.innerHTML = "";
       set("cd-sub", "Nov 14–22, 2026");
     }
     // Wedding
@@ -1477,8 +1434,6 @@ document.addEventListener("click", e => {
   const i = document.getElementById(b.dataset.eye); if (!i) return;
   const show = i.type === "password"; i.type = show ? "text" : "password"; b.textContent = show ? "Hide" : "Show";
 });
-// Mission dispatches unseal on the clock: refresh once a minute.
-setInterval(() => { if (current === "mission") VIEWS.mission.update(); }, 60000);
 
 paintStatus();
 route();
