@@ -751,7 +751,6 @@ const ORDER = [
   ["intel","The Intel","Flights, base, logistics, packing"],
   ["itinerary","The Itinerary","Nine days, times and maps"],
   ["map","The Map","Every stop on one map"],
-  ["vault","The Vault","Photos, videos, inside jokes"],
   ["polls","The Polls","Live votes on what's next"],
   ["leaderboard","The Leaderboard","Points, awards, punishments"],
 ];
@@ -793,7 +792,6 @@ VIEWS.mission = {
       <dl class="kv" style="margin-top:12px">
         <dt>Today</dt><dd>${day ? `Day ${day}: ${h(DAYS[day - 1].title)}` : now < T_START ? "Pre-mission" : "Mission complete"}</dd>
         <dt>Leader</dt><dd>${lead && lead.total ? `${h(crewBy(lead.key).name)} · ${lead.total} pts` : "No points on the board yet"}</dd>
-        <dt>Vault</dt><dd>${D.vault.length} upload${D.vault.length === 1 ? "" : "s"} · ${D.jokes.length} inside joke${D.jokes.length === 1 ? "" : "s"}</dd>
         <dt>Polls</dt><dd>${openPolls} open · <a href="#polls">vote now</a></dd>
       </dl>`;
   },
@@ -1349,7 +1347,7 @@ VIEWS.leaderboard = {
     const judge = ME === "umang" || Store.owner;
     return `<section class="view">
       <div class="head"><div class="eyebrow"><span lang="tr">Puan tablosu</span> · Standings</div><h2>The Leaderboard</h2>
-      <p>Challenges + daily drops + the groom's decrees. Awards unseal at 6:00 AM on Sun Nov 22, Istanbul time.</p></div>
+      <p>Points from challenges and the groom's decrees. Awards unseal at 6:00 AM on Sun Nov 22, Istanbul time.</p></div>
       <div class="lb" id="lb"></div>
       <div class="stack"><h3>Final awards</h3><div class="grid g3" id="awards"></div><div id="reveal"></div></div>
       <div class="grid g2">
@@ -1379,14 +1377,13 @@ VIEWS.leaderboard = {
       <div class="rank">${i + 1}</div>${avatar(r.key)}
       <div style="min-width:0"><b>${h(crewBy(r.key).name)}</b>${(D.crew.find(x => x.id === r.key) || {}).nick ? ` <span class="nick">“${h(D.crew.find(x => x.id === r.key).nick)}”</span>` : ""}
         <div class="bar-track"><i style="width:${Math.max(0, r.total) / top * 100}%"></i></div>
-        <div class="breakdown">${r.ch} challenges · ${r.drops} daily drops · ${r.bonus >= 0 ? "+" : ""}${r.bonus} decrees</div></div>
+        <div class="breakdown">${r.ch} challenges · ${r.bonus >= 0 ? "+" : ""}${r.bonus} decrees</div></div>
       <div class="pts" style="font-size:28px">${r.total}</div></div>`).join("");
     const open = awardsOpen();
     const by = (f) => { const best = [...sc].sort((a, b) => f(b) - f(a))[0]; return best && f(best) > 0 ? crewBy(best.key).name : "No one yet"; };
     const awards = [
       ["Sultan of the Bosphorus", "Most points overall", by(r => r.total)],
       ["Dare Devil", "Most challenges completed", by(r => r.chCount)],
-      ["Chief Archivist", "Most uploads to the Vault", by(r => r.photos)],
       ["Voice of the People", "Most votes cast", by(r => r.votes)],
       ["The Anchor", "Last place. See punishment menu", allZero ? "No one yet" : crewBy(sc[sc.length - 1].key).name],
     ];
@@ -1410,7 +1407,7 @@ VIEWS.leaderboard = {
 let current = null, raf = 0;
 function route(force = false) {
   const k = (location.hash || "").slice(1);
-  const HIDDEN = ["challenges"]; // hidden for now; remove from this list to bring it back
+  const HIDDEN = ["challenges", "vault"]; // hidden for now; remove from this list to bring it back
   const name = VIEWS[k] && !HIDDEN.includes(k) ? k : "mission";
   if (name === current && !force) return;
   current = name;
