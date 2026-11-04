@@ -10,17 +10,17 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 <style>
-/* Layout: a mission dossier set at night on the Bosphorus. Sticky command bar + tab strip,
-   Iznik star tile and a skyline of domes and minarets under a crescent as the only ornament.
-   Palette: Bosphorus night navy, Turkish flag red (primary), Iznik cobalt + turquoise, Ottoman gold. */
+/* Layout: Iznik ceramics. Sticky bar with a kilim band, Iznik star tile, a nazar bead mark and a
+   skyline of domes and minarets under a crescent. Section names carry their Turkish name.
+   Palette: lapis night / porcelain day, Iznik cobalt, Iznik red (primary), turquoise, Ottoman gold. */
 :root{
-  --bg:#080e1c; --panel:#0f1729; --panel-2:#152038; --line:#24304c;
-  --ink:#f1ede4; --muted:#9aa5bd;
-  --tile:#2f62e0;      /* Iznik cobalt */
-  --turq:#2fb8aa;      /* Iznik turquoise: links, info */
-  --coral:#ee2b37;     /* Turkish flag red: primary action, seals, stamps */
-  --gold:#e2ad4a;      /* Ottoman gold: points, wedding */
-  --sky:#233a70;       /* skyline silhouette */
+  --bg:#08112b; --panel:#0e1a3d; --panel-2:#14224b; --line:#243569;
+  --ink:#f4efe4; --muted:#a3acc6;
+  --tile:#3a6cf0;      /* Iznik cobalt */
+  --turq:#2fbcae;      /* Iznik turquoise: links, info */
+  --coral:#e8473b;     /* Iznik red: primary action, stamps */
+  --gold:#e0ac45;      /* Ottoman gold: points, wedding */
+  --sky:#22397a;       /* skyline silhouette */
   --ok:#4cc38a; --warn:#e2ad4a;
   --on-accent:#ffffff;
   --f-display:"Big Shoulders Display","Arial Narrow",Impact,sans-serif;
@@ -30,12 +30,12 @@
   color-scheme:dark;
 }
 @media (prefers-color-scheme: light){:root:not([data-theme="dark"]){
-  --bg:#eef1f6; --panel:#ffffff; --panel-2:#f4f6fa; --line:#d3d9e6;
-  --ink:#0c1630; --muted:#55617a; --tile:#1c4fc4; --turq:#0b7a70; --coral:#c8102e; --gold:#8c5c00; --sky:#c3cde4;
+  --bg:#f1f4fa; --panel:#ffffff; --panel-2:#f5f7fc; --line:#d2daea;
+  --ink:#0b1940; --muted:#53607d; --tile:#1b4bb5; --turq:#0b7a70; --coral:#b8291f; --gold:#8a5f05; --sky:#c5d0ea;
   --ok:#1d8a55; --warn:#8c5c00; --on-accent:#ffffff; color-scheme:light}}
 :root[data-theme="light"]{
-  --bg:#eef1f6; --panel:#ffffff; --panel-2:#f4f6fa; --line:#d3d9e6;
-  --ink:#0c1630; --muted:#55617a; --tile:#1c4fc4; --turq:#0b7a70; --coral:#c8102e; --gold:#8c5c00; --sky:#c3cde4;
+  --bg:#f1f4fa; --panel:#ffffff; --panel-2:#f5f7fc; --line:#d2daea;
+  --ink:#0b1940; --muted:#53607d; --tile:#1b4bb5; --turq:#0b7a70; --coral:#b8291f; --gold:#8a5f05; --sky:#c5d0ea;
   --ok:#1d8a55; --warn:#8c5c00; --on-accent:#ffffff; color-scheme:light}
 
 *{box-sizing:border-box}
@@ -54,10 +54,12 @@ p{margin:0}
 .wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 
 /* command bar */
+.bar::after{content:"";display:block;height:7px;background:var(--kilim) 0 0/28px 7px repeat-x}
 .bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .bar-top{display:flex;align-items:center;gap:12px;padding-block:10px}
 .brand{font:900 20px/1 var(--f-display);letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ink);display:flex;align-items:center;gap:8px;white-space:nowrap}
-.brand i{display:inline-block;width:18px;height:18px;background:var(--coral);-webkit-mask:var(--star) center/contain no-repeat;mask:var(--star) center/contain no-repeat}
+.brand i{display:inline-block;width:20px;height:20px;border-radius:50%;flex:none;
+  background:radial-gradient(circle,#0b0f1a 0 17%,#7fc6f0 18% 33%,#ffffff 34% 52%,#1d4fc4 53% 100%);box-shadow:0 0 0 1px rgba(0,0,0,.15)}
 .status{margin-left:auto;display:flex;align-items:center;gap:8px;min-width:0}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
 .dot.live{background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2s infinite}
@@ -109,7 +111,7 @@ textarea{min-height:84px;resize:vertical}
 
 /* hero */
 .hero{position:relative;overflow:hidden;border-radius:14px;border:1px solid var(--line);background:var(--panel);padding:clamp(22px,5vw,44px)}
-.hero::before{content:"";position:absolute;inset:0;background:var(--tile);opacity:.13;-webkit-mask:var(--star) 0 0/56px 56px repeat;mask:var(--star) 0 0/56px 56px repeat;pointer-events:none}
+.hero::before{content:"";position:absolute;inset:0;background:var(--tile);opacity:.17;-webkit-mask:var(--star) 0 0/56px 56px repeat;mask:var(--star) 0 0/56px 56px repeat;pointer-events:none}
 .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(100deg,var(--panel) 35%,transparent 100%);pointer-events:none}
 .hero>*{position:relative;z-index:2}
 .hero{padding-bottom:clamp(90px,14vw,150px)}
@@ -269,6 +271,8 @@ img{max-width:100%}
 .gate-facts{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
 @media (max-width:820px){.gate{grid-template-columns:1fr}.gate-side{position:static}}
 .ph{width:100%;height:100%;display:grid;place-items:center;color:var(--muted);font:700 11px/1 var(--f-mono)}
+:root{--kilim:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='7'%3E%3Crect width='28' height='7' fill='%23b8291f'/%3E%3Cpath d='M7 0 10.5 3.5 7 7 3.5 3.5Z' fill='%231b4bb5'/%3E%3Cpath d='M21 0 24.5 3.5 21 7 17.5 3.5Z' fill='%2320a597'/%3E%3Cpath d='M7 2 8.5 3.5 7 5 5.5 3.5Z' fill='%23f4efe4'/%3E%3Cpath d='M21 2 22.5 3.5 21 5 19.5 3.5Z' fill='%23e0ac45'/%3E%3Cpath d='M14 2.5 15 3.5 14 4.5 13 3.5Z' fill='%23e0ac45'/%3E%3C/svg%3E")}
+.eyebrow [lang="tr"]{color:var(--coral)}
 :root{--star:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 4 63.4 17.6 82.5 17.5 82.4 36.6 96 50 82.4 63.4 82.5 82.5 63.4 82.4 50 96 36.6 82.4 17.5 82.5 17.6 63.4 4 50 17.6 36.6 17.5 17.5 36.6 17.6Z'/%3E%3C/svg%3E")}
 </style>
 </head>
@@ -746,7 +750,6 @@ const ORDER = [
   ["intel","The Intel","Flights, base, logistics, packing"],
   ["itinerary","The Itinerary","Nine days, times and maps"],
   ["map","The Map","Every stop on one map"],
-  ["challenges","The Challenges","Games, dares, competitions"],
   ["vault","The Vault","Photos, videos, inside jokes"],
   ["polls","The Polls","Live votes on what's next"],
   ["leaderboard","The Leaderboard","Points, awards, punishments"],
@@ -758,8 +761,8 @@ VIEWS.mission = {
     return `<section class="view">
       <div class="hero">
         <canvas class="skyline" aria-hidden="true"></canvas>
-        <span class="stamp">Classified · Eyes of the crew only</span>
-        <div class="eyebrow" style="margin-top:18px">Istanbul · November 2026 · 41.047° N 29.027° E</div>
+        <span class="stamp"><span lang="tr">Gizli</span> · Eyes of the crew only</span>
+        <div class="eyebrow" style="margin-top:18px"><span lang="tr">Hoş geldiniz</span> · İstanbul · November 2026 · 41.047° N 29.027° E</div>
         <h1>Umang's Bachelor</h1>
         <p class="sub">Nine days on the Bosphorus, Sapanca and the Thracian wine route. Five agents. One groom.</p>
         <div class="cds">
@@ -877,7 +880,7 @@ function tickCountdown() {
 VIEWS.crew = {
   shell() {
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Personnel file</div><h2>The Crew</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Ekip</span> · Crew</div><h2>The Crew</h2>
       <p>Five agents. Set your own codename and photo; everyone sees it on every vote, upload and score.</p></div>
       <div class="grid g3" id="crew-grid"></div>
     </section>`;
@@ -904,7 +907,7 @@ VIEWS.crew = {
 function editProfile(key) {
   const c = crewBy(key), p = D.crew.find(x => x.id === key) || {};
   openDialog(`<form class="dlg" id="prof-form">
-    <div class="eyebrow">Personnel file</div><h3>${h(c.name)}</h3>
+    <div class="eyebrow"><span lang="tr">Ekip</span> · Crew</div><h3>${h(c.name)}</h3>
     <label class="f">Codename<input type="text" id="pf-nick" maxlength="40" value="${h(p.nick || "")}" placeholder="e.g. The Sommelier"></label>
     <label class="f">One-liner<input type="text" id="pf-tag" maxlength="120" value="${h(p.tagline || "")}" placeholder="Most likely to…"></label>
     <label class="f">Photo<input type="file" id="pf-photo" accept="image/*"></label>
@@ -930,7 +933,7 @@ VIEWS.intel = {
   shell() {
     const packed = LS.get("bp:packed", {});
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Logistics</div><h2>The Intel</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Bilgi</span> · Intel</div><h2>The Intel</h2>
       <p>Flights, base, bookings and the kit list. All flights assume Istanbul Airport (IST); Sabiha Gökçen (SAW) is 60–90 min from base.</p></div>
       <div class="stack"><h3>Flights</h3>
         <div class="tbl"><table><thead><tr><th>Agent</th><th>Arrival</th><th>Departure</th><th>Leave Airbnb by</th></tr></thead>
@@ -1028,7 +1031,7 @@ VIEWS.itinerary = {
     if (!selDay) selDay = tripDay() || 1;
     const today = tripDay();
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Day by day</div><h2>The Itinerary</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Program</span> · Day by day</div><h2>The Itinerary</h2>
       <p>Times verified against published opening hours on 3 Nov 2026. Tap any stop for directions.</p></div>
       <div class="daypick" role="group" aria-label="Day">${DAYS.map(d => `<button type="button" data-day="${d.n}" aria-pressed="${d.n === selDay}" class="${d.n === today ? "today" : ""}"><span>${d.dow}${d.n === today ? " · now" : ""}</span><b>${d.date.slice(8)}</b><span>Day ${d.n}</span></button>`).join("")}</div>
       <div id="day-card"></div>
@@ -1074,7 +1077,7 @@ const isDark = () => getComputedStyle(document.documentElement).colorScheme.incl
 VIEWS.map = {
   shell() {
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Area of operations</div><h2>The Map</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Harita</span> · Every stop</div><h2>The Map</h2>
       <p>Every stop from the itinerary, colored by day. Tap a pin for the plan and directions. Pins are approximate; Google Maps has the exact spot.</p></div>
       <div class="chips" id="map-days">${[["all", "All days"], ...DAYS.map(d => [String(d.n), `Day ${d.n} · ${d.dow}`])].map(([v, l]) =>
         `<button class="chip" type="button" data-md="${v}" aria-pressed="${mapDay === v}">${l}</button>`).join("")}</div>
@@ -1145,7 +1148,7 @@ let chFilter = "All";
 VIEWS.challenges = {
   shell() {
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Field tests</div><h2>The Challenges</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Görevler</span> · Field tests</div><h2>The Challenges</h2>
       <p>Claim a challenge when you've done it. Points land on the leaderboard instantly.</p></div>
       <div class="panel"><h3>House rules</h3><ul class="plain" style="margin-top:10px">${RULES.map(r => `<li>${h(r)}</li>`).join("")}</ul></div>
       <div class="chips" id="ch-filter">${["All","Daily","Dares","Competitions","Crew-made"].map(f => `<button class="chip" type="button" data-f="${f}" aria-pressed="${f === chFilter}">${f}</button>`).join("")}</div>
@@ -1217,7 +1220,7 @@ VIEWS.vault = {
     const today = tripDay();
     const def = today || (Date.now() < T_START ? 0 : 9);
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Evidence locker</div><h2>The Vault</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Kasa</span> · Evidence locker</div><h2>The Vault</h2>
       <p>Daily photos, videos and the inside jokes nobody outside this crew will understand. Your first upload each trip day earns ${DAILY_DROP_PTS} points.</p></div>
       <form class="panel stack" id="up-form"><h3>Drop evidence</h3>
                 <div class="grid g2">
@@ -1293,7 +1296,7 @@ function openShot(id) {
 VIEWS.polls = {
   shell() {
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Crew decides</div><h2>The Polls</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Oylama</span> · Crew decides</div><h2>The Polls</h2>
       <p>Results move live as the crew votes. Tap an option to vote; tap another to change it.</p></div>
       <div id="polls" class="grid g2"></div>
       <form class="panel stack" id="poll-form"><h3>Call a vote</h3>
@@ -1344,7 +1347,7 @@ VIEWS.leaderboard = {
   shell() {
     const judge = ME === "umang" || Store.owner;
     return `<section class="view">
-      <div class="head"><div class="eyebrow">Standings</div><h2>The Leaderboard</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Puan tablosu</span> · Standings</div><h2>The Leaderboard</h2>
       <p>Challenges + daily drops + the groom's decrees. Awards unseal at 6:00 AM on Sun Nov 22, Istanbul time.</p></div>
       <div class="lb" id="lb"></div>
       <div class="stack"><h3>Final awards</h3><div class="grid g3" id="awards"></div><div id="reveal"></div></div>
@@ -1406,7 +1409,8 @@ VIEWS.leaderboard = {
 let current = null, raf = 0;
 function route(force = false) {
   const k = (location.hash || "").slice(1);
-  const name = VIEWS[k] ? k : "mission";
+  const HIDDEN = ["challenges"]; // hidden for now; remove from this list to bring it back
+  const name = VIEWS[k] && !HIDDEN.includes(k) ? k : "mission";
   if (name === current && !force) return;
   current = name;
   $("#tabs").innerHTML = ORDER.map(([key, t]) => `<a href="#${key}" ${key === name ? `aria-current="page"` : ""}>${t.replace("The ", "")}</a>`).join("");
