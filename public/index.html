@@ -149,13 +149,6 @@ textarea{min-height:84px;resize:vertical}
 .facts dt{font:700 11px/1 var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 .facts dd{margin:6px 0 0;font-weight:600}
 
-/* section index */
-.index{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:10px}
-.index a{display:grid;gap:4px;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px}
-.index a:hover{border-color:var(--turq)}
-.index b{font:800 20px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em}
-.index span{color:var(--muted);font-size:13px}
-
 /* crew */
 .crew-card{display:grid;gap:14px;align-content:start}
 .crew-top{display:flex;gap:14px;align-items:center}
@@ -784,7 +777,6 @@ VIEWS.mission = {
         <div><dt>Party nights</dt><dd>Sun · Mon · Tue · Wed · Fri · Sat</dd></div>
       </dl>
       <div class="panel" id="pulse"></div>
-      <div class="index">${ORDER.slice(1).map(([k, t, s]) => `<a href="#${k}"><b>${t}</b><span>${s}</span></a>`).join("")}</div>
     </section>`;
   },
   mount() { tickCountdown(); drawSkylines(); },
