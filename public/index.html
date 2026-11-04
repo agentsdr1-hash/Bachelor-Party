@@ -314,11 +314,11 @@ const T_AWARDS = Date.parse("2026-11-22T06:00:00+03:00");  // awards unseal
 const BASE = "Şair Necati Sokak No:13, Ortaköy, Beşiktaş, İstanbul 34347";
 
 const CREW = [
-  {key:"umang", name:"Umang", role:"The Groom", photo:"crew/umang.jpg", note:"Wine connoisseur", arr:"Sat Nov 14 · 6:00 AM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[1,1,1,1,1,1,1,1]},
-  {key:"sagar", name:"Sagar", role:"Advance team", photo:"crew/sagar.jpg", note:"Lands with the groom", arr:"Sat Nov 14 · 8:00 AM", dep:"Sat Nov 21 · 9:30 PM", leave:"5:30 PM", nights:[1,1,1,1,1,1,1,0]},
-  {key:"dev",   name:"Dev",   role:"First out", note:"Send-off on the yacht", arr:"Sun Nov 15 · 5:00 AM", dep:"Thu Nov 19 · 4:30 PM", leave:"1:15 PM (taxi)", nights:[0,1,1,1,1,0,0,0]},
-  {key:"abhi",  name:"Abhi",  role:"Night shift", note:"4:30 AM pickup on Day 9", arr:"Sun Nov 15 · 5:30 PM", dep:"Sun Nov 22 · 8:00 AM", leave:"4:30 AM", nights:[0,1,1,1,1,1,1,1]},
-  {key:"nick",  name:"Nick",  role:"Last to land", photo:"crew/nick.jpg", note:"Flies out with the groom", arr:"Sun Nov 15 · 6:00 PM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[0,1,1,1,1,1,1,1]},
+  {key:"umang", name:"Umang", role:"Sultan · The groom", photo:"crew/umang.jpg", note:"Wine connoisseur. Holds court at the meyhane table.", arr:"Sat Nov 14 · 6:00 AM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[1,1,1,1,1,1,1,1]},
+  {key:"sagar", name:"Sagar", role:"Vezir · Advance party", photo:"crew/sagar.jpg", note:"Lands with the Sultan, first on the Ortaköy waterfront.", arr:"Sat Nov 14 · 8:00 AM", dep:"Sat Nov 21 · 9:30 PM", leave:"5:30 PM", nights:[1,1,1,1,1,1,1,0]},
+  {key:"dev",   name:"Dev",   role:"Paşa · First to sail", note:"Gone by Thursday. The Bosphorus yacht send-off is his.", arr:"Sun Nov 15 · 5:00 AM", dep:"Thu Nov 19 · 4:30 PM", leave:"1:15 PM (taxi)", nights:[0,1,1,1,1,0,0,0]},
+  {key:"abhi",  name:"Abhi",  role:"Bekçi · Night watch", note:"Closes İstiklal at night, still makes the 4:30 AM pickup.", arr:"Sun Nov 15 · 5:30 PM", dep:"Sun Nov 22 · 8:00 AM", leave:"4:30 AM", nights:[0,1,1,1,1,1,1,1]},
+  {key:"nick",  name:"Nick",  role:"Kaptan · Last to land", photo:"crew/nick.jpg", note:"Last ashore, sails home beside the Sultan.", arr:"Sun Nov 15 · 6:00 PM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[0,1,1,1,1,1,1,1]},
 ];
 const NIGHTS = ["Sat 14","Sun 15","Mon 16","Tue 17","Wed 18","Thu 19","Fri 20","Sat 21"];
 
@@ -880,7 +880,7 @@ VIEWS.crew = {
   shell() {
     return `<section class="view">
       <div class="head"><div class="eyebrow"><span lang="tr">Ekip</span> · Crew</div><h2>The Crew</h2>
-      <p>Five agents. Set your own codename and photo; everyone sees it on every vote, upload and score.</p></div>
+      <p>Five men, one Sultan, nine nights on the Bosphorus. Pick your codename and photo; it follows you to every vote and score.</p></div>
       <div class="grid g3" id="crew-grid"></div>
     </section>`;
   },
