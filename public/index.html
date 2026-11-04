@@ -315,7 +315,7 @@ const BASE = "Şair Necati Sokak No:13, Ortaköy, Beşiktaş, İstanbul 34347";
 
 const CREW = [
   {key:"umang", name:"Umang", role:"The Groom", note:"Wine connoisseur", arr:"Sat Nov 14 · 6:00 AM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[1,1,1,1,1,1,1,1]},
-  {key:"sagar", name:"Sagar", role:"Advance team", note:"Lands with the groom", arr:"Sat Nov 14 · 8:00 AM", dep:"Sat Nov 21 · 9:30 PM", leave:"5:30 PM", nights:[1,1,1,1,1,1,1,0]},
+  {key:"sagar", name:"Sagar", role:"Advance team", photo:"crew/sagar.jpg", note:"Lands with the groom", arr:"Sat Nov 14 · 8:00 AM", dep:"Sat Nov 21 · 9:30 PM", leave:"5:30 PM", nights:[1,1,1,1,1,1,1,0]},
   {key:"dev",   name:"Dev",   role:"First out", note:"Send-off on the yacht", arr:"Sun Nov 15 · 5:00 AM", dep:"Thu Nov 19 · 4:30 PM", leave:"1:15 PM (taxi)", nights:[0,1,1,1,1,0,0,0]},
   {key:"abhi",  name:"Abhi",  role:"Night shift", note:"4:30 AM pickup on Day 9", arr:"Sun Nov 15 · 5:30 PM", dep:"Sun Nov 22 · 8:00 AM", leave:"4:30 AM", nights:[0,1,1,1,1,1,1,1]},
   {key:"nick",  name:"Nick",  role:"Last to land", note:"Flies out with the groom", arr:"Sun Nov 15 · 6:00 PM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[0,1,1,1,1,1,1,1]},
@@ -533,7 +533,8 @@ function avatar(key, cls = "") {
   const c = crewBy(key); if (!c) return `<span class="av ${cls}">?</span>`;
   const prof = D.crew.find(x => x.id === key) || {};
   const i = crewIdx(key);
-  const src = mediaSrc(prof.photo ? {url: prof.photo} : prof.photoPath ? {path: prof.photoPath} : null);
+  // An uploaded profile photo wins; otherwise the default photo shipped with the site (public/crew/).
+  const src = mediaSrc(prof.photo ? {url: prof.photo} : prof.photoPath ? {path: prof.photoPath} : null) || c.photo || "";
   const inner = src ? `<img src="${h(src)}" alt="">` : h(c.name[0]);
   return `<span class="av c${i} ${cls}" title="${h(c.name)}">${inner}</span>`;
 }
