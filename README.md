@@ -1,6 +1,6 @@
 # Operation Bosphorus: Umang's Bachelor (Istanbul, Nov 14–22, 2026)
 
-Crew hub for the trip: countdowns to the trip and the wedding (Hua Hin, Dec 19), sealed daily dispatches, crew profiles, intel, itinerary, a map of every stop, challenges, photo vault, live polls and leaderboard.
+Trip site for the crew: a home page with both countdowns, what's next on the plan, the route and the trip in numbers; the day-by-day plan; a map of every stop; crew profiles; live polls; and essentials (flights, base, packing, bookings, ideas backlog). Challenges, the photo vault and the leaderboard are built but hidden (`HIDDEN` in `route()`).
 
 - **Hosting:** Vercel serves `public/` (plain HTML, no build)
 - **Data and photos:** Supabase (free plan)
