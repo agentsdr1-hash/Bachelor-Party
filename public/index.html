@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
-<title>Operation Bosphorus</title>
+<title>Umang's Bachelor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Public+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
@@ -281,7 +281,7 @@ img{max-width:100%}
 <header class="bar">
   <div class="wrap">
     <div class="bar-top">
-      <a class="brand" href="#mission"><i aria-hidden="true"></i>Op · Bosphorus</a>
+      <a class="brand" href="#mission"><i aria-hidden="true"></i>Umang's Bachelor</a>
       <div class="status">
         <span class="dot" id="live-dot" title="Connection"></span>
         <span class="label muted mono" id="live-label" style="font-size:12px">Connecting</span>
@@ -746,9 +746,9 @@ const awardsOpen = () => Date.now() >= T_AWARDS || !!settings().reveal;
    ============================================================ */
 const VIEWS = {};
 const ORDER = [
-  ["mission","The Mission","Countdowns, dates, crew pulse"],
+  ["mission","Home","Countdowns, dates, crew pulse"],
   ["crew","The Crew","Profiles, nicknames, photos"],
-  ["intel","The Intel","Flights, base, logistics, packing"],
+  ["intel","Essentials","Flights, base, logistics, packing"],
   ["itinerary","The Itinerary","Nine days, times and maps"],
   ["map","The Map","Every stop on one map"],
   ["polls","The Polls","Live votes on what's next"],
@@ -761,10 +761,9 @@ VIEWS.mission = {
     return `<section class="view">
       <div class="hero">
         <canvas class="skyline" aria-hidden="true"></canvas>
-        <span class="stamp"><span lang="tr">Gizli</span> · Eyes of the crew only</span>
-        <div class="eyebrow" style="margin-top:18px"><span lang="tr">Hoş geldiniz</span> · İstanbul · November 2026 · 41.047° N 29.027° E</div>
+        <div class="eyebrow"><span lang="tr">Hoş geldiniz</span> · İstanbul · November 2026 · 41.047° N 29.027° E</div>
         <h1>Umang's Bachelor</h1>
-        <p class="sub">Nine days on the Bosphorus, Sapanca and the Thracian wine route. Five agents. One groom.</p>
+        <p class="sub">Bosphorus nights, mountain mornings and Thracian wine. Nine days to send Umang off in style.</p>
         <div class="cds">
           <div class="cd-block"><div class="cd-label" id="cd-label"></div><div class="cd-title" id="cd-title"></div>
             <div class="countdown" id="cd"></div><div class="cd-sub" id="cd-sub"></div></div>
@@ -788,9 +787,9 @@ VIEWS.mission = {
     const sc = scores(), lead = sc[0];
     const day = tripDay();
     const openPolls = D.polls.filter(p => !p.closed).length;
-    $("#pulse").innerHTML = `<div class="spread"><h3>Mission pulse</h3><span class="pill turq">${Store.mode === "live" ? "Live" : "Preview"}</span></div>
+    $("#pulse").innerHTML = `<div class="spread"><h3>At a glance</h3><span class="pill turq">${Store.mode === "live" ? "Live" : "Preview"}</span></div>
       <dl class="kv" style="margin-top:12px">
-        <dt>Today</dt><dd>${day ? `Day ${day}: ${h(DAYS[day - 1].title)}` : now < T_START ? "Pre-mission" : "Mission complete"}</dd>
+        <dt>Today</dt><dd>${day ? `Day ${day}: ${h(DAYS[day - 1].title)}` : now < T_START ? "Before the trip" : "Trip complete"}</dd>
         <dt>Leader</dt><dd>${lead && lead.total ? `${h(crewBy(lead.key).name)} · ${lead.total} pts` : "No points on the board yet"}</dd>
         <dt>Polls</dt><dd>${openPolls} open · <a href="#polls">vote now</a></dd>
       </dl>`;
@@ -880,7 +879,7 @@ VIEWS.crew = {
   shell() {
     return `<section class="view">
       <div class="head"><div class="eyebrow"><span lang="tr">Ekip</span> · Crew</div><h2>The Crew</h2>
-      <p>Five men, one Sultan, nine nights on the Bosphorus. Pick your codename and photo; it follows you to every vote and score.</p></div>
+      <p>Five men, one Sultan, nine nights on the Bosphorus. Add a nickname and photo; it shows on every vote.</p></div>
       <div class="grid g3" id="crew-grid"></div>
     </section>`;
   },
@@ -891,7 +890,7 @@ VIEWS.crew = {
       return `<article class="panel crew-card">
         <div class="crew-top">${avatar(c.key)}<div style="min-width:0">
           <div class="crew-name">${h(c.name)}</div>
-          <div class="nick">${p.nick ? "“" + h(p.nick) + "”" : "Codename pending"}</div>
+          <div class="nick">${p.nick ? "“" + h(p.nick) + "”" : "No nickname yet"}</div>
           <div class="muted" style="font-size:13px">${h(c.role)}</div></div></div>
         ${p.tagline ? `<p>${h(p.tagline)}</p>` : `<p class="muted">${h(c.note)}</p>`}
         <dl class="kv"><dt>Lands</dt><dd>${h(c.arr)}</dd><dt>Flies out</dt><dd>${h(c.dep)}</dd><dt>Leave base</dt><dd>${h(c.leave)}</dd><dt>Points</dt><dd class="pts" style="font-size:16px">${sc[c.key] || 0}</dd></dl>
@@ -907,7 +906,7 @@ function editProfile(key) {
   const c = crewBy(key), p = D.crew.find(x => x.id === key) || {};
   openDialog(`<form class="dlg" id="prof-form">
     <div class="eyebrow"><span lang="tr">Ekip</span> · Crew</div><h3>${h(c.name)}</h3>
-    <label class="f">Codename<input type="text" id="pf-nick" maxlength="40" value="${h(p.nick || "")}" placeholder="e.g. The Sommelier"></label>
+    <label class="f">Nickname<input type="text" id="pf-nick" maxlength="40" value="${h(p.nick || "")}" placeholder="e.g. The Sommelier"></label>
     <label class="f">One-liner<input type="text" id="pf-tag" maxlength="120" value="${h(p.tagline || "")}" placeholder="Most likely to…"></label>
     <label class="f">Photo<input type="file" id="pf-photo" accept="image/*"></label>
         <div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>Cancel</button><button class="btn primary" type="submit" id="pf-save">Save</button></div>
@@ -932,14 +931,14 @@ VIEWS.intel = {
   shell() {
     const packed = LS.get("bp:packed", {});
     return `<section class="view">
-      <div class="head"><div class="eyebrow"><span lang="tr">Bilgi</span> · Intel</div><h2>The Intel</h2>
+      <div class="head"><div class="eyebrow"><span lang="tr">Bilgi</span> · Essentials</div><h2>Essentials</h2>
       <p>Flights, base, bookings and the kit list. All flights assume Istanbul Airport (IST); Sabiha Gökçen (SAW) is 60–90 min from base.</p></div>
       <div class="stack"><h3>Flights</h3>
-        <div class="tbl"><table><thead><tr><th>Agent</th><th>Arrival</th><th>Departure</th><th>Leave Airbnb by</th></tr></thead>
+        <div class="tbl"><table><thead><tr><th>Name</th><th>Arrival</th><th>Departure</th><th>Leave Airbnb by</th></tr></thead>
         <tbody>${CREW.map(c => `<tr><td><b>${h(c.name)}</b>${c.key === "umang" ? ` <span class="pill party">Groom</span>` : ""}</td><td class="mono">${h(c.arr)}</td><td class="mono">${h(c.dep)}</td><td class="mono">${h(c.leave)}</td></tr>`).join("")}</tbody></table></div>
       </div>
       <div class="stack"><h3>Nightly headcount</h3>
-        <div class="tbl"><table><thead><tr><th>Agent</th>${NIGHTS.map(n => `<th class="num">${n}</th>`).join("")}</tr></thead>
+        <div class="tbl"><table><thead><tr><th>Name</th>${NIGHTS.map(n => `<th class="num">${n}</th>`).join("")}</tr></thead>
         <tbody>${CREW.map(c => `<tr><td>${h(c.name)}</td>${c.nights.map(on => `<td class="num">${on ? "●" : "–"}</td>`).join("")}</tr>`).join("")}
         <tr><td><b>Total</b></td>${NIGHTS.map((_, i) => `<td class="num"><b>${CREW.reduce((a, c) => a + c.nights[i], 0)}</b></td>`).join("")}</tr></tbody></table></div>
       </div>
@@ -1224,7 +1223,7 @@ VIEWS.vault = {
       <form class="panel stack" id="up-form"><h3>Drop evidence</h3>
                 <div class="grid g2">
           <label class="f">Photo or video<input type="file" id="up-file" accept="image/*,video/*" multiple required></label>
-          <label class="f">Day<select id="up-day"><option value="0">Pre-mission</option>${DAYS.map(d => `<option value="${d.n}" ${d.n === def ? "selected" : ""}>Day ${d.n} · ${h(d.label)}</option>`).join("")}</select></label>
+          <label class="f">Day<select id="up-day"><option value="0">Before the trip</option>${DAYS.map(d => `<option value="${d.n}" ${d.n === def ? "selected" : ""}>Day ${d.n} · ${h(d.label)}</option>`).join("")}</select></label>
         </div>
         <label class="f">Caption<input type="text" id="up-cap" maxlength="140" placeholder="What happened here?"></label>
         <div class="row"><button class="btn primary" type="submit" id="up-btn">Upload</button><span class="muted" style="font-size:13px">Photos are resized before upload. Videos up to 50 MB.</span></div>
@@ -1285,7 +1284,7 @@ function openShot(id) {
   const canRm = v.by === ME || Store.owner;
   const s = mediaSrc(v);
   openDialog(`${v.kind === "video" ? `<video src="${h(s)}" controls playsinline></video>` : `<img src="${h(s)}" alt="${h(v.cap || "")}">`}
-    <div class="dlg"><div class="spread"><div><b>${h(crewBy(v.by)?.name || "")}</b> <span class="muted">· ${v.day ? "Day " + v.day : "Pre-mission"} · ${h(fmtTime(v.at))}</span></div>
+    <div class="dlg"><div class="spread"><div><b>${h(crewBy(v.by)?.name || "")}</b> <span class="muted">· ${v.day ? "Day " + v.day : "Before the trip"} · ${h(fmtTime(v.at))}</span></div>
     <div class="row">${canRm ? `<button class="btn small danger" type="button" id="rm-shot">Delete</button>` : ""}<button class="btn small" type="button" data-close>Close</button></div></div>
     ${v.cap ? `<p>${h(v.cap)}</p>` : ""}</div>`, "lightbox");
   if (canRm) $("#rm-shot").onclick = () => confirmBox("Delete this upload for everyone?", () => Store.del("vault", id));
@@ -1351,11 +1350,11 @@ VIEWS.leaderboard = {
       <div class="lb" id="lb"></div>
       <div class="stack"><h3>Final awards</h3><div class="grid g3" id="awards"></div><div id="reveal"></div></div>
       <div class="grid g2">
-        <div class="panel stack"><h3>Punishment menu</h3><p class="muted" style="font-size:14px">Last place at the end of the mission draws one.</p>
+        <div class="panel stack"><h3>Punishment menu</h3><p class="muted" style="font-size:14px">Last place at the end of the trip draws one.</p>
           <ol class="plain">${PUNISHMENTS.map(p => `<li>${h(p)}</li>`).join("")}</ol><div id="punish"></div></div>
         ${judge ? `<form class="panel stack" id="decree-form"><h3>Groom's decree</h3>
           <p class="muted" style="font-size:14px">Bonus or penalty points, with a reason the crew can see.</p>
-          <div class="grid g2"><label class="f">Agent<select id="dc-who">${CREW.map(c => `<option value="${c.key}">${h(c.name)}</option>`).join("")}</select></label>
+          <div class="grid g2"><label class="f">Who<select id="dc-who">${CREW.map(c => `<option value="${c.key}">${h(c.name)}</option>`).join("")}</select></label>
           <label class="f">Points (+ or −)<input type="number" id="dc-pts" value="10" step="5" min="-100" max="100"></label></div>
           <label class="f">Reason<input type="text" id="dc-why" maxlength="120" placeholder="Carried the cooler up Kartepe" required></label>
           <div><button class="btn primary" type="submit">Issue decree</button></div></form>` : `<div class="panel stack" id="decrees-only"><h3>Groom's decrees</h3><div id="decrees"></div></div>`}

@@ -1,4 +1,4 @@
-# Operation Bosphorus: Umang's Bachelor (Istanbul, Nov 14–22, 2026)
+# Umang's Bachelor (Istanbul, Nov 14–22, 2026)
 
 Crew hub for the trip: countdowns to the trip and the wedding (Hua Hin, Dec 19), sealed daily dispatches, crew profiles, intel, itinerary, a map of every stop, challenges, photo vault, live polls and leaderboard.
 
