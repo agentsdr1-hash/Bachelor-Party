@@ -106,7 +106,7 @@ textarea{min-height:84px;resize:vertical}
 /* avatars */
 .av{width:44px;height:44px;border-radius:50%;flex:none;display:grid;place-items:center;font:800 18px/1 var(--f-display);color:var(--on-accent);background:var(--turq);overflow:hidden;text-transform:uppercase}
 .av img{width:100%;height:100%;object-fit:cover}
-.av.c1{background:var(--coral)} .av.c2{background:var(--tile);color:#fff} .av.c3{background:var(--gold)} .av.c4{background:var(--ok)}
+.av.c1{background:var(--coral)} .av.c2{background:var(--tile);color:#fff} .av.c3{background:var(--gold)} .av.c4{background:var(--ok)} .av.c5{background:#8a4fd6;color:#fff}
 .avs{display:flex}.avs .av{width:24px;height:24px;font-size:11px;border:2px solid var(--panel);margin-left:-6px}.avs .av:first-child{margin-left:0}
 
 /* hero */
@@ -319,6 +319,7 @@ const CREW = [
   {key:"dev",   name:"Dev",   role:"Paşa · First to sail", note:"Gone by Thursday. The Bosphorus yacht send-off is his.", arr:"Sun Nov 15 · 5:00 AM", dep:"Thu Nov 19 · 4:30 PM", leave:"1:15 PM (taxi)", nights:[0,1,1,1,1,0,0,0]},
   {key:"abhi",  name:"Abhi",  role:"Bekçi · Night watch", note:"Closes İstiklal at night, still makes the 4:30 AM pickup.", arr:"Sun Nov 15 · 5:30 PM", dep:"Sun Nov 22 · 8:00 AM", leave:"4:30 AM", nights:[0,1,1,1,1,1,1,1]},
   {key:"nick",  name:"Nick",  role:"Kaptan · Last to land", photo:"crew/nick.jpg", note:"Last ashore, sails home beside the Sultan.", arr:"Sun Nov 15 · 6:00 PM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[0,1,1,1,1,1,1,1]},
+  {key:"akshay", name:"Akshay", role:"Efendi · Late addition", note:"The newest member of the crew. Flights to be confirmed.", arr:"TBC", dep:"TBC", leave:"TBC", nights:null},
 ];
 const NIGHTS = ["Sat 14","Sun 15","Mon 16","Tue 17","Wed 18","Thu 19","Fri 20","Sat 21"];
 
@@ -827,7 +828,7 @@ VIEWS.mission = {
       <dl class="facts">
         <div><dt>Dates</dt><dd>Sat Nov 14 – Sun Nov 22, 2026</dd></div>
         <div><dt>Base</dt><dd>Airbnb, Ortaköy, Beşiktaş</dd></div>
-        <div><dt>Crew</dt><dd>Umang · Sagar · Dev · Abhi · Nick</dd></div>
+        <div><dt>Crew</dt><dd>Umang · Sagar · Dev · Abhi · Nick · Akshay</dd></div>
         <div><dt>Weather</dt><dd>12–15°C, rain likely, sunset ≈ 4:50 PM</dd></div>
         <div><dt>Party nights</dt><dd>Sun · Mon · Tue · Wed · Fri · Sat</dd></div>
       </dl>
@@ -932,7 +933,7 @@ VIEWS.crew = {
   shell() {
     return `<section class="view">
       <div class="head"><div class="eyebrow"><span lang="tr">Ekip</span> · Crew</div><h2>The Crew</h2>
-      <p>Five men, one Sultan, nine nights on the Bosphorus. Add a nickname and photo; it shows on every vote.</p></div>
+      <p>One Sultan, his crew, nine nights on the Bosphorus. Add a nickname and photo; it shows on every vote.</p></div>
       <div class="grid g3" id="crew-grid"></div>
     </section>`;
   },
@@ -947,8 +948,8 @@ VIEWS.crew = {
           <div class="muted" style="font-size:13px">${h(c.role)}</div></div></div>
         ${p.tagline ? `<p>${h(p.tagline)}</p>` : `<p class="muted">${h(c.note)}</p>`}
         <dl class="kv"><dt>Lands</dt><dd>${h(c.arr)}</dd><dt>Flies out</dt><dd>${h(c.dep)}</dd><dt>Leave base</dt><dd>${h(c.leave)}</dd><dt>Points</dt><dd class="pts" style="font-size:16px">${sc[c.key] || 0}</dd></dl>
-        <div><div class="eyebrow" style="margin-bottom:6px">Nights in Istanbul · ${c.nights.filter(Boolean).length}/8</div>
-          <div class="nights">${c.nights.map((on, i) => `<i class="${on ? "on" : ""}" title="${NIGHTS[i]}"></i>`).join("")}</div></div>
+        <div><div class="eyebrow" style="margin-bottom:6px">Nights in Istanbul · ${c.nights ? c.nights.filter(Boolean).length + "/8" : "TBC"}</div>
+          <div class="nights">${(c.nights || NIGHTS.map(() => 0)).map((on, i) => `<i class="${on ? "on" : ""}" title="${NIGHTS[i]}"></i>`).join("")}</div></div>
         <div class="row"><button class="btn small" type="button" data-edit="${c.key}">${ME === c.key ? "Edit my profile" : "Edit profile"}</button></div>
       </article>`;
     }).join("");
@@ -999,8 +1000,8 @@ VIEWS.intel = {
       </div>
       <div class="stack"><h3>Nightly headcount</h3>
         <div class="tbl"><table><thead><tr><th>Name</th>${NIGHTS.map(n => `<th class="num">${n}</th>`).join("")}</tr></thead>
-        <tbody>${CREW.map(c => `<tr><td>${h(c.name)}</td>${c.nights.map(on => `<td class="num">${on ? "●" : "–"}</td>`).join("")}</tr>`).join("")}
-        <tr><td><b>Total</b></td>${NIGHTS.map((_, i) => `<td class="num"><b>${CREW.reduce((a, c) => a + c.nights[i], 0)}</b></td>`).join("")}</tr></tbody></table></div>
+        <tbody>${CREW.map(c => `<tr><td>${h(c.name)}</td>${c.nights ? c.nights.map(on => `<td class="num">${on ? "●" : "–"}</td>`).join("") : NIGHTS.map(() => `<td class="num muted">?</td>`).join("")}</tr>`).join("")}
+        <tr><td><b>Total</b></td>${NIGHTS.map((_, i) => `<td class="num"><b>${CREW.reduce((a, c) => a + (c.nights ? c.nights[i] : 0), 0) + (CREW.some(c => !c.nights) ? "+" : "")}</b></td>`).join("")}</tr></tbody></table></div>
       </div>
       <div class="grid g2">
         <div class="panel"><h3>Base</h3>
