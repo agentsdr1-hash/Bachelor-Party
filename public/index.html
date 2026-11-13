@@ -319,7 +319,7 @@ const CREW = [
   {key:"dev",   name:"Dev",   role:"Paşa · First to sail", note:"Gone by Thursday. The Bosphorus yacht send-off is his.", arr:"Sun Nov 15 · 5:00 AM", dep:"Thu Nov 19 · 4:30 PM", leave:"1:15 PM (taxi)", nights:[0,1,1,1,1,0,0,0]},
   {key:"abhi",  name:"Abhi",  role:"Bekçi · Night watch", note:"Closes İstiklal at night, still makes the 4:30 AM pickup.", arr:"Sun Nov 15 · 5:30 PM", dep:"Sun Nov 22 · 8:00 AM", leave:"4:30 AM", nights:[0,1,1,1,1,1,1,1]},
   {key:"nick",  name:"Nick",  role:"Kaptan · Last to land", photo:"crew/nick.jpg", note:"Last ashore, sails home beside the Sultan.", arr:"Sun Nov 15 · 6:00 PM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[0,1,1,1,1,1,1,1]},
-  {key:"akshay", name:"Akshay", role:"Efendi · Late addition", note:"Lands with the Sunday evening wave; first to the airport on the last morning.", arr:"Sun Nov 15 · 6:10 PM", dep:"Sun Nov 22 · 6:30 AM", leave:"3:00 AM", nights:[0,1,1,1,1,1,1,1]},
+  {key:"akshay", name:"Akshay", nick:"The Red-Eye", role:"Efendi · Late addition", note:"Lands with the Sunday evening wave; first to the airport on the last morning.", arr:"Sun Nov 15 · 6:10 PM", dep:"Sun Nov 22 · 6:30 AM", leave:"3:00 AM", nights:[0,1,1,1,1,1,1,1]},
 ];
 const NIGHTS = ["Sat 14","Sun 15","Mon 16","Tue 17","Wed 18","Thu 19","Fri 20","Sat 21"];
 
@@ -945,7 +945,7 @@ VIEWS.crew = {
       return `<article class="panel crew-card">
         <div class="crew-top">${avatar(c.key)}<div style="min-width:0">
           <div class="crew-name">${h(c.name)}</div>
-          <div class="nick">${p.nick ? "“" + h(p.nick) + "”" : "No nickname yet"}</div>
+          <div class="nick">${(p.nick || c.nick) ? "“" + h(p.nick || c.nick) + "”" : "No nickname yet"}</div>
           <div class="muted" style="font-size:13px">${h(c.role)}</div></div></div>
         ${p.tagline ? `<p>${h(p.tagline)}</p>` : `<p class="muted">${h(c.note)}</p>`}
         <dl class="kv"><dt>Lands</dt><dd>${h(c.arr)}</dd><dt>Flies out</dt><dd>${h(c.dep)}</dd><dt>Leave base</dt><dd>${h(c.leave)}</dd><dt>Points</dt><dd class="pts" style="font-size:16px">${sc[c.key] || 0}</dd></dl>
@@ -961,7 +961,7 @@ function editProfile(key) {
   const c = crewBy(key), p = D.crew.find(x => x.id === key) || {};
   openDialog(`<form class="dlg" id="prof-form">
     <div class="eyebrow"><span lang="tr">Ekip</span> · Crew</div><h3>${h(c.name)}</h3>
-    <label class="f">Nickname<input type="text" id="pf-nick" maxlength="40" value="${h(p.nick || "")}" placeholder="e.g. The Sommelier"></label>
+    <label class="f">Nickname<input type="text" id="pf-nick" maxlength="40" value="${h(p.nick || c.nick || "")}" placeholder="e.g. The Sommelier"></label>
     <label class="f">One-liner<input type="text" id="pf-tag" maxlength="120" value="${h(p.tagline || "")}" placeholder="Most likely to…"></label>
     <label class="f">Photo<input type="file" id="pf-photo" accept="image/*"></label>
         <div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>Cancel</button><button class="btn primary" type="submit" id="pf-save">Save</button></div>
@@ -1451,7 +1451,7 @@ VIEWS.leaderboard = {
     const allZero = sc.every(r => r.total === 0);
     $("#lb").innerHTML = sc.map((r, i) => `<div class="lb-row ${!allZero && i === 0 ? "first" : ""} ${!allZero && i === sc.length - 1 ? "last" : ""}">
       <div class="rank">${i + 1}</div>${avatar(r.key)}
-      <div style="min-width:0"><b>${h(crewBy(r.key).name)}</b>${(D.crew.find(x => x.id === r.key) || {}).nick ? ` <span class="nick">“${h(D.crew.find(x => x.id === r.key).nick)}”</span>` : ""}
+      <div style="min-width:0"><b>${h(crewBy(r.key).name)}</b>${(() => { const n = (D.crew.find(x => x.id === r.key) || {}).nick || crewBy(r.key).nick; return n ? ` <span class="nick">“${h(n)}”</span>` : ""; })()}
         <div class="bar-track"><i style="width:${Math.max(0, r.total) / top * 100}%"></i></div>
         <div class="breakdown">${r.ch} challenges · ${r.bonus >= 0 ? "+" : ""}${r.bonus} decrees</div></div>
       <div class="pts" style="font-size:28px">${r.total}</div></div>`).join("");
