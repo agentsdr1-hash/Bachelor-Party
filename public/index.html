@@ -455,14 +455,31 @@ const LOCAL_TIPS = [
   ["Plan the day", "Gün planı", [
     "İstanbul is huge: pick one or two areas a day.",
     "Hit the big sights early (8–9 AM) for the best photos and shortest lines.",
-    "Worth a wander in free time: Galata (around the tower) and Balat (colourful houses, the rainbow stairs).",
+    "Free time? See Itinerary → Neighbourhoods: Galata, Cihangir, Balat, Arnavutköy and the Asian side are all worth a wander.",
   ]],
 ];
 const EXTRA_SIGHTS = [
-  ["Galata", "Galata Tower", [41.0256, 28.9741], "Free time", "Wander the steep lanes around Galata Tower: cafés, shops and views over the Golden Horn."],
-  ["Balat", "Balat Istanbul", [41.0293, 28.9487], "Free time", "Colourful old houses and the rainbow staircase on the Golden Horn."],
   ["Spice Bazaar", "Spice Bazaar Istanbul", [41.0166, 28.9706], "Free time", "Smaller, cheaper alternative to the Grand Bazaar: Turkish delight, spices, tea. Next to Eminönü pier."],
   ["Arasta Bazaar", "Arasta Bazaar Istanbul", [41.0051, 28.9774], "Free time", "Quiet bazaar behind the Blue Mosque: carpets, ceramics, textiles."],
+];
+
+// Must-visit neighbourhoods. plan = where the itinerary already goes; null = free time. Free-time pins (and free:true) get grey map pins.
+const NEIGHBORHOODS = [
+  {side: "European side", name: "Sultanahmet", note: "All the major historic sights in one walkable area.", plan: "Days 2, 5, 8", pins: [["Sultanahmet", "Sultanahmet Square", [41.0058, 28.9768]]]},
+  {side: "European side", name: "Taksim & İstiklal", note: "Bustling pedestrian street: sweets, shops, live music.", plan: "Days 1, 8", pins: [["Taksim & İstiklal", "Taksim Square", [41.0370, 28.9850]]]},
+  {side: "European side", name: "Galata", note: "Cheesecake with a tower view, rooftop bars, steep lanes.", plan: null, pins: [["Galata", "Galata Tower", [41.0256, 28.9741]]]},
+  {side: "European side", name: "Cihangir", note: "Local vibe and cute cafés, a short walk from İstiklal.", plan: null, pins: [["Cihangir", "Cihangir Istanbul", [41.0318, 28.9832]]]},
+  {side: "European side", name: "Ortaköy", note: "Our base. Eat a kumpir and visit the mosque under the bridge.", plan: "Base · Day 1", pins: [["Ortaköy", "Ortaköy Mosque", [41.0473, 29.0270]]]},
+  {side: "European side", name: "Balat", note: "Colourful houses and the rainbow staircase on the Golden Horn.", plan: null, pins: [["Balat", "Balat Istanbul", [41.0293, 28.9487]]]},
+  {side: "European side", name: "Bebek & Arnavutköy", note: "Walk the scenic Bosphorus promenade between the two.", plan: "Day 7 (Bebek)", free: true, pins: [["Arnavutköy", "Arnavutköy Istanbul", [41.0670, 29.0430]]]},
+  {side: "Asian side", name: "Üsküdar, Kuzguncuk & Çamlıca", note: "A great combo for one day: waterfront mosques, a village-like street, the hilltop view.", plan: null,
+    pins: [["Üsküdar", "Üsküdar Meydanı", [41.0262, 29.0156]], ["Kuzguncuk", "Kuzguncuk Istanbul", [41.0368, 29.0310]], ["Çamlıca Hill", "Büyük Çamlıca Tepesi", [41.0277, 29.0687]]]},
+  {side: "Asian side", name: "Kadıköy", note: "Easy-going by day, nightlife in the evening.", plan: "Day 4", pins: [["Kadıköy", "Kadıköy Çarşı", [40.9903, 29.0253]]]},
+];
+// Free-time pins for the map: extra sights plus neighbourhoods not on the plan
+const FREE_PINS = [
+  ...EXTRA_SIGHTS.map(([name, q, ll, , note]) => ({name, q, ll, note})),
+  ...NEIGHBORHOODS.filter(n => !n.plan || n.free).flatMap(n => n.pins.map(([name, q, ll]) => ({name, q, ll, note: n.note}))),
 ];
 
 const ATTRACTIONS = [
@@ -1076,6 +1093,15 @@ VIEWS.itinerary = {
       <p>Times verified against published opening hours on 3 Nov 2026. Tap any stop for directions.</p></div>
       <div class="daypick" role="group" aria-label="Day">${DAYS.map(d => `<button type="button" data-day="${d.n}" aria-pressed="${d.n === selDay}" class="${d.n === today ? "today" : ""}"><span>${d.dow}${d.n === today ? " · now" : ""}</span><b>${d.date.slice(8)}</b><span>Day ${d.n}</span></button>`).join("")}</div>
       <div id="day-card"></div>
+      <div class="stack"><h3>Neighbourhoods</h3>
+        <p class="muted">Must-visit areas on both sides of the Bosphorus. Tap a name for directions.</p>
+        <div class="grid g2">${["European side", "Asian side"].map(side => `<div class="panel stack" style="gap:0">
+          <div class="eyebrow"><span lang="tr">${side === "European side" ? "Avrupa yakası" : "Anadolu yakası"}</span> · ${side}</div>
+          ${NEIGHBORHOODS.filter(n => n.side === side).map(n => `<div class="ch" style="grid-template-columns:1fr">
+            <div style="min-width:0"><a class="t" href="${mapUrl(n.pins[0][1])}" target="_blank" rel="noopener" style="color:var(--ink)">${h(n.name)} ↗</a><div class="d">${h(n.note)}</div></div>
+            <div class="meta">${n.plan ? `<span class="pill turq">On the plan · ${h(n.plan)}</span>` : `<span class="pill">Free time</span>`}</div></div>`).join("")}
+        </div>`).join("")}</div>
+      </div>
       <div class="stack"><h3>Field guide · attractions</h3>
         <div class="tbl"><table><thead><tr><th>Attraction</th><th>When</th><th>Know before you go</th></tr></thead>
         <tbody>${ATTRACTIONS.map(([a, b, c]) => `<tr><td><a href="${mapUrl(a + " Istanbul")}" target="_blank" rel="noopener"><b>${h(a)}</b></a></td><td class="mono" style="white-space:nowrap">${h(b)}</td><td>${h(c)}</td></tr>`).join("")}</tbody></table></div></div>
@@ -1174,7 +1200,7 @@ VIEWS.map = {
         .bindPopup(`<b>Day ${s.day} · ${h(s.time)}</b><br>${h(s.plan)}<br><span style="opacity:.7">${h(s.label)}</span><br><a href="${mapUrl(s.q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>`);
       mapMarkers.push({m, s});
     });
-    if (mapDay === "all") EXTRA_SIGHTS.forEach(([name, q, ll, when, note]) => {
+    if (mapDay === "all") FREE_PINS.forEach(({name, q, ll, note}) => {
       const s = {day: 0, ll, q, plan: name, label: "Free time", time: note};
       const m = L.marker(ll, {icon: icon("+", "#6b7280")}).addTo(mapLayer)
         .bindPopup(`<b>${h(name)} · free time</b><br>${h(note)}<br><a href="${mapUrl(q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>`);
