@@ -319,7 +319,7 @@ const CREW = [
   {key:"dev",   name:"Dev",   role:"Paşa · First to sail", note:"Gone by Thursday. The Bosphorus yacht send-off is his.", arr:"Sun Nov 15 · 5:00 AM", dep:"Thu Nov 19 · 4:30 PM", leave:"1:15 PM (taxi)", nights:[0,1,1,1,1,0,0,0]},
   {key:"abhi",  name:"Abhi",  role:"Bekçi · Night watch", note:"Closes İstiklal at night, still makes the 4:30 AM pickup.", arr:"Sun Nov 15 · 5:30 PM", dep:"Sun Nov 22 · 8:00 AM", leave:"4:30 AM", nights:[0,1,1,1,1,1,1,1]},
   {key:"nick",  name:"Nick",  role:"Kaptan · Last to land", photo:"crew/nick.jpg", note:"Last ashore, sails home beside the Sultan.", arr:"Sun Nov 15 · 6:00 PM", dep:"Sun Nov 22 · 3:30 PM", leave:"11:30 AM", nights:[0,1,1,1,1,1,1,1]},
-  {key:"akshay", name:"Akshay", role:"Efendi · Late addition", note:"The newest member of the crew. Flights to be confirmed.", arr:"TBC", dep:"TBC", leave:"TBC", nights:null},
+  {key:"akshay", name:"Akshay", role:"Efendi · Late addition", note:"Lands with the Sunday evening wave; first to the airport on the last morning.", arr:"Sun Nov 15 · 6:10 PM", dep:"Sun Nov 22 · 6:30 AM", leave:"3:00 AM", nights:[0,1,1,1,1,1,1,1]},
 ];
 const NIGHTS = ["Sat 14","Sun 15","Mon 16","Tue 17","Wed 18","Thu 19","Fri 20","Sat 21"];
 
@@ -331,23 +331,23 @@ const DAYS = [
     ["8:00 PM","Taxi to Beyoğlu (25 min)",null],
     ["Evening","Live music along İstiklal Avenue","İstiklal Avenue"]],
     wear:"Layers + light rain shell. Night: dark jeans, clean sneakers."},
-  {n:2,date:"2026-11-15",dow:"Sun",label:"Sun Nov 15",title:"Old City + welcome night",crew:"All 5 by evening",party:true,items:[
+  {n:2,date:"2026-11-15",dow:"Sun",label:"Sun Nov 15",title:"Old City + welcome night",crew:"All 6 by evening",party:true,items:[
     ["5:00 AM","Dev lands at IST; to Airbnb to sleep","Istanbul Airport"],
     ["10:15 AM","Taxi to Sultanahmet (40 min)",null],
     ["11:00 AM","Blue Mosque first. Dress code; clears before the ~12:10 PM noon-prayer closure","Blue Mosque Istanbul","Moved ahead of Hagia Sophia (was 12:15 PM, which collides with noon prayer)"],
     ["11:50 AM","Hagia Sophia (Umang, Sagar, Dev), tourist gallery route","Hagia Sophia"],
     ["1:15 PM","Basilica Cistern, then Turkish coffee","Basilica Cistern"],
-    ["5:30–6:00 PM","Abhi and Nick land at IST; at Airbnb by ~8 PM","Istanbul Airport"],
+    ["5:30–6:10 PM","Abhi, Nick and Akshay land at IST; at Airbnb by ~8 PM","Istanbul Airport"],
     ["9:00 PM","Welcome meyhane dinner in Asmalımescit","Asmalımescit Beyoğlu"]],
     wear:"Long trousers (no shorts) and a shirt that covers shoulders for the mosques; slip-on shoes. Night: smart-casual."},
-  {n:3,date:"2026-11-16",dow:"Mon",label:"Mon Nov 16",title:"Sapanca: mountain + adventure",crew:"All 5 · overnight",party:true,items:[
+  {n:3,date:"2026-11-16",dow:"Mon",label:"Mon Nov 16",title:"Sapanca: mountain + adventure",crew:"All 6 · overnight",party:true,items:[
     ["9:30 AM","Private van east to Kartepe (drive ≈ 2 hrs)",null],
     ["12:00 PM","Kartepe cable car: summit views over the lake and autumn forest","Kartepe Teleferik Maşukiye"],
     ["1:30 PM","Maşukiye village: waterfalls, forest trails, riverside trout lunch","Maşukiye Kartepe"],
     ["3:00 PM","ATV forest trails or ziplining (finish before dark ≈ 4:50 PM)",null],
     ["5:00 PM","Luxury bungalow: private heated pool, jacuzzi, fireplace, forest view","Sapanca"]],
     wear:"Hiking shoes or trail sneakers, fleece, waterproof jacket. Kartepe summit runs 5–8°C colder. Swimwear for the pool."},
-  {n:4,date:"2026-11-17",dow:"Tue",label:"Tue Nov 17",title:"Lake morning, Istanbul night",crew:"All 5",party:true,items:[
+  {n:4,date:"2026-11-17",dow:"Tue",label:"Tue Nov 17",title:"Lake morning, Istanbul night",crew:"All 6",party:true,items:[
     ["7:15 AM","Sunrise over the lake (≈ 7:20 AM), then breakfast","Sapanca Gölü"],
     ["9:00 AM","Sapanca Lake shore walk or bike loop","Sapanca Gölü"],
     ["10:15 AM","Ormanya Nature Park trails and Hobbit-style houses, or horse riding","Ormanya Kartepe"],
@@ -356,7 +356,7 @@ const DAYS = [
     ["6:30 PM","Ferry Karaköy → Kadıköy (Asian side)","Karaköy İskelesi"],
     ["7:15 PM","Kadıköy market food crawl, then Kadife Sokak bars","Kadife Sokak Kadıköy"]],
     wear:"Comfortable travel layers. Pack flip-flops; the hamam provides the peştemal (towel wrap)."},
-  {n:5,date:"2026-11-18",dow:"Wed",label:"Wed Nov 18",title:"Palace, bazaar, night yacht",crew:"All 5 · Dev's last night",party:true,items:[
+  {n:5,date:"2026-11-18",dow:"Wed",label:"Wed Nov 18",title:"Palace, bazaar, night yacht",crew:"All 6 · Dev's last night",party:true,items:[
     ["9:00 AM","Taxi to Sultanahmet (40 min)",null],
     ["9:45 AM","Topkapı Palace (+ Harem). Allow 2–2.5 hrs","Topkapı Palace"],
     ["12:15 PM","Archaeology Museums, next door inside Gülhane. 45 min highlights","Istanbul Archaeology Museums"],
@@ -364,7 +364,7 @@ const DAYS = [
     ["3:30 PM","Süleymaniye Mosque terrace: sunset over the Golden Horn","Süleymaniye Mosque"],
     ["8:00 PM","Private Bosphorus dinner yacht from Ortaköy pier. Dev's send-off","Ortaköy İskelesi"]],
     wear:"Walking shoes for 15k steps of cobbles; mosque-appropriate trousers. Yacht: smart jacket, it is cold on the water."},
-  {n:6,date:"2026-11-19",dow:"Thu",label:"Thu Nov 19",title:"Tekirdağ wine day",crew:"Umang, Sagar, Abhi, Nick",party:false,items:[
+  {n:6,date:"2026-11-19",dow:"Thu",label:"Thu Nov 19",title:"Tekirdağ wine day",crew:"Umang, Sagar, Abhi, Nick, Akshay",party:false,items:[
     ["8:00 AM","Goodbye to Dev at the Airbnb",null],
     ["8:30 AM","Private van west to Thrace (drive ≈ 1.5 hrs)",null],
     ["10:30 AM","Chateau Nuzun tasting, Marmaraereğlisi (keep it short)","Chateau Nuzun Marmaraereğlisi"],
@@ -374,22 +374,23 @@ const DAYS = [
     ["4:00 PM","Drive back to the Airbnb (drive ≈ 2 hrs)",null],
     ["Evening","Easy dinner in Ortaköy","Ortaköy"]],
     wear:"Smart-casual for the wineries; warm layer, vineyards are windy in November."},
-  {n:7,date:"2026-11-20",dow:"Fri",label:"Fri Nov 20",title:"Rest day, club night",crew:"4",party:true,items:[
+  {n:7,date:"2026-11-20",dow:"Fri",label:"Fri Nov 20",title:"Rest day, club night",crew:"5",party:true,items:[
     ["Morning","Sleep in",null],
     ["11:30 AM","Bebek waterfront breakfast","Bebek Istanbul"],
     ["2:00 PM","Dolmabahçe Palace, 10 min away (optional; last entry ≈ 4 PM)","Dolmabahçe Palace"],
     ["4:00 PM","Nap and reset",null],
     ["9:00 PM","Oligark dinner + VIP table. Main club night; dress code enforced, table minimum","Oligark Istanbul Kuruçeşme"]],
     wear:"Club dress code: collared shirt or sharp knit, tailored trousers or dark jeans, leather shoes. No sportswear, shorts or caps."},
-  {n:8,date:"2026-11-21",dow:"Sat",label:"Sat Nov 21",title:"Old City catch-up, final night",crew:"4 → 3 after Sagar leaves",party:true,items:[
+  {n:8,date:"2026-11-21",dow:"Sat",label:"Sat Nov 21",title:"Old City catch-up, final night",crew:"5 → 4 after Sagar leaves",party:true,items:[
     ["9:30 AM","Farewell breakfast, Beşiktaş breakfast street","Beşiktaş Kahvaltıcılar Sokağı"],
     ["11:00 AM","Taxi to Sultanahmet (40 min)",null],
     ["11:45 AM","Abhi + Nick: Basilica Cistern → Hagia Sophia → Blue Mosque after ~1:30 PM","Basilica Cistern","Re-ordered so the Blue Mosque falls between noon and afternoon prayers"],
     ["11:45 AM","Umang + Sagar: Museum of Turkish and Islamic Arts","Museum of Turkish and Islamic Arts"],
     ["5:30 PM","Sagar leaves the Airbnb for IST (flight 9:30 PM)","Istanbul Airport"],
-    ["8:30 PM","360 Istanbul dinner, then İstiklal live music. Abhi stops early (4:30 AM pickup)","360 Istanbul"]],
+    ["8:30 PM","360 Istanbul dinner, then İstiklal live music. Akshay and Abhi stop early (3:00 and 4:30 AM pickups)","360 Istanbul"]],
     wear:"Walking shoes by day. 360 Istanbul: smart-casual, a jacket for the terrace."},
-  {n:9,date:"2026-11-22",dow:"Sun",label:"Sun Nov 22",title:"Departures",crew:"Umang, Abhi, Nick",party:false,items:[
+  {n:9,date:"2026-11-22",dow:"Sun",label:"Sun Nov 22",title:"Departures",crew:"Umang, Abhi, Nick, Akshay",party:false,items:[
+    ["3:00 AM","Akshay to IST (flight 6:30 AM)","Istanbul Airport"],
     ["4:30 AM","Abhi to IST (flight 8:00 AM)","Istanbul Airport"],
     ["11:30 AM","Umang and Nick to IST (flights 3:30 PM)","Istanbul Airport"]],
     wear:"Travel clothes; leave the fancy kit packed the night before."},
@@ -511,7 +512,7 @@ const BOOKINGS = [
   ["Dev's taxi to IST (Thu 1:15 PM)",""],
   ["Oligark dinner + VIP table (Fri)",""],
   ["360 Istanbul (Sat)",""],
-  ["Airport transfers: Sagar Sat 5:30 PM · Abhi Sun 4:30 AM · Umang + Nick Sun 11:30 AM",""],
+  ["Airport transfers: Sagar Sat 5:30 PM · Akshay Sun 3:00 AM · Abhi Sun 4:30 AM · Umang + Nick Sun 11:30 AM",""],
 ];
 const RISKS = [
   "All-male groups can be turned away at the door. Book tables in advance.",
