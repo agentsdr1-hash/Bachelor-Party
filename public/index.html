@@ -430,6 +430,41 @@ const PLACES = {
 const BASE_LATLNG = [41.0490, 29.0255];
 const DAY_COLORS = ["#ee2b37","#2f62e0","#1f9e8f","#d18a12","#8a4fd6","#e0567a","#0e8fc2","#6b8f1a","#b5651d"];
 
+// Local know-how from the crew. Prices are as reported; the lira moves, so treat them as a guide.
+const LOCAL_TIPS = [
+  ["Getting around", "Ulaşım", [
+    "Get an <b>İstanbulkart</b> at any metro station (blue and yellow kiosk). The card is about 165 TL plus a fee to load money; start with 200 TL. It isn't available in Apple Wallet.",
+    "Don't tap a credit card for public transport: it costs about 40% more than the İstanbulkart.",
+    "Metro is about 27 TL a ride, ferries about 45 TL.",
+    "A public ferry across the Bosphorus is a cheap cruise (around €2).",
+    "Taxis: use Uber, BiTaksi or InDrive and pay in the app. In a street taxi, make sure the meter is on and never agree to a fixed price.",
+    "At IST, the ride-hail pickup is upstairs at the Domestic Departures entrance.",
+  ]],
+  ["Money", "Para", [
+    "Best rates for Turkish lira: exchange offices at the Grand Bazaar and on İstiklal Avenue.",
+    "The lira moves a lot, so change small amounts as you go.",
+    "Cards and phone payments work almost everywhere.",
+  ]],
+  ["Phone & data", "İnternet", [
+    "Public Wi-Fi is rare. Install an eSIM before you fly (Airalo works well).",
+    "SIM cards sold at the airport are overpriced.",
+  ]],
+  ["Shopping", "Çarşı", [
+    "The Grand Bazaar can be pricey. Cheaper options: the Spice Bazaar, the Arasta Bazaar behind the Blue Mosque, and local markets in Kadıköy, Fatih and Beşiktaş.",
+  ]],
+  ["Plan the day", "Gün planı", [
+    "İstanbul is huge: pick one or two areas a day.",
+    "Hit the big sights early (8–9 AM) for the best photos and shortest lines.",
+    "Worth a wander in free time: Galata (around the tower) and Balat (colourful houses, the rainbow stairs).",
+  ]],
+];
+const EXTRA_SIGHTS = [
+  ["Galata", "Galata Tower", [41.0256, 28.9741], "Free time", "Wander the steep lanes around Galata Tower: cafés, shops and views over the Golden Horn."],
+  ["Balat", "Balat Istanbul", [41.0293, 28.9487], "Free time", "Colourful old houses and the rainbow staircase on the Golden Horn."],
+  ["Spice Bazaar", "Spice Bazaar Istanbul", [41.0166, 28.9706], "Free time", "Smaller, cheaper alternative to the Grand Bazaar: Turkish delight, spices, tea. Next to Eminönü pier."],
+  ["Arasta Bazaar", "Arasta Bazaar Istanbul", [41.0051, 28.9774], "Free time", "Quiet bazaar behind the Blue Mosque: carpets, ceramics, textiles."],
+];
+
 const ATTRACTIONS = [
   ["Hagia Sophia","Sun 15 · Sat 21","Separate paid tourist entrance to the upper galleries; closes to visitors around prayer times."],
   ["Blue Mosque","Sun 15 · Sat 21","Free. Covered shoulders and knees, shoes off. Closed to visitors ~60–90 min around each prayer."],
@@ -442,6 +477,7 @@ const ATTRACTIONS = [
   ["İstiklal live music","Sat 14 · Sat 21","Bars fill after 10 PM. Use BiTaksi/Uber home."],
   ["Museum of Turkish & Islamic Arts","Sat 21","Winter ≈ 9:00 AM–5:00 PM. Best carpet collection in the city."],
   ["Dolmabahçe Palace","Fri 20 (optional)","Closed Mondays. ≈ 9:00 AM–5:00 PM; guided route, last entry ≈ 4 PM."],
+  ...EXTRA_SIGHTS.map(([name, , , when, note]) => [name, when, note]),
 ];
 const TRAVEL = [["Oligark, Ortaköy pier, Beşiktaş, Dolmabahçe","5–10 min"],["Beyoğlu / İstiklal / Karaköy","20–30 min"],["Sultanahmet (Old City)","35–50 min"],["Istanbul Airport (IST)","45–60 min"]];
 const PACKING = ["Waterproof shell + compact umbrella","One proper going-out outfit with leather shoes (Oligark)","Trousers that cover knees + top that covers shoulders","Hiking/trail shoes for Kartepe and Maşukiye","Swimwear (bungalow pool + jacuzzi)","Warm mid-layer: fleece or knit","Power bank and EU plug adapter (Type C/F, 230V)","Flip-flops for the hamam","Passport + e-visa printout if your passport needs one"];
@@ -933,6 +969,13 @@ VIEWS.intel = {
     return `<section class="view">
       <div class="head"><div class="eyebrow"><span lang="tr">Bilgi</span> · Essentials</div><h2>Essentials</h2>
       <p>Flights, base, bookings and the kit list. All flights assume Istanbul Airport (IST); Sabiha Gökçen (SAW) is 60–90 min from base.</p></div>
+      <div class="panel stack">
+        <div><div class="eyebrow"><span lang="tr">İpuçları</span> · Local tips</div><h3 style="margin-top:6px">İstanbul know-how</h3></div>
+        <div class="grid g2">${LOCAL_TIPS.map(([title, tr, items]) => `<div class="stack" style="gap:8px">
+          <div class="spread" style="justify-content:flex-start;gap:8px"><b>${h(title)}</b><span class="muted" lang="tr" style="font-size:13px">${h(tr)}</span></div>
+          <ul class="plain">${items.map(i => `<li>${i}</li>`).join("")}</ul></div>`).join("")}</div>
+        <p class="muted" style="font-size:13px">Prices as reported before the trip; the lira moves, so check on arrival.</p>
+      </div>
       <div class="stack"><h3>Flights</h3>
         <div class="tbl"><table><thead><tr><th>Name</th><th>Arrival</th><th>Departure</th><th>Leave Airbnb by</th></tr></thead>
         <tbody>${CREW.map(c => `<tr><td><b>${h(c.name)}</b>${c.key === "umang" ? ` <span class="pill party">Groom</span>` : ""}</td><td class="mono">${h(c.arr)}</td><td class="mono">${h(c.dep)}</td><td class="mono">${h(c.leave)}</td></tr>`).join("")}</tbody></table></div>
@@ -1131,8 +1174,14 @@ VIEWS.map = {
         .bindPopup(`<b>Day ${s.day} · ${h(s.time)}</b><br>${h(s.plan)}<br><span style="opacity:.7">${h(s.label)}</span><br><a href="${mapUrl(s.q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>`);
       mapMarkers.push({m, s});
     });
+    if (mapDay === "all") EXTRA_SIGHTS.forEach(([name, q, ll, when, note]) => {
+      const s = {day: 0, ll, q, plan: name, label: "Free time", time: note};
+      const m = L.marker(ll, {icon: icon("+", "#6b7280")}).addTo(mapLayer)
+        .bindPopup(`<b>${h(name)} · free time</b><br>${h(note)}<br><a href="${mapUrl(q)}" target="_blank" rel="noopener">Open in Google Maps ↗</a>`);
+      mapMarkers.push({m, s}); stops.push(s);
+    });
     $("#map-list").innerHTML = stops.map((s, i) => `<button class="map-item" type="button" data-mi="${i}">
-      <span class="map-pin" style="background:${DAY_COLORS[s.day - 1]}">${s.day}</span>
+      <span class="map-pin" style="background:${s.day ? DAY_COLORS[s.day - 1] : "#6b7280"}">${s.day || "+"}</span>
       <span style="min-width:0"><b>${h(s.plan)}</b><br><span class="muted" style="font-size:12px">${h(s.label)} · ${h(s.time)}</span></span>
       <span class="muted" style="font-size:12px">Show ↗</span></button>`).join("");
     $$("[data-mi]").forEach(b => b.onclick = () => { const {m} = mapMarkers[+b.dataset.mi]; leafletMap.setView(m.getLatLng(), 15); m.openPopup(); $("#map").scrollIntoView({behavior: "smooth", block: "center"}); });
