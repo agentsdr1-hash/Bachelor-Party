@@ -195,6 +195,10 @@ ul.plain{margin:0;padding-left:18px;display:grid;gap:6px}
 /* challenges */
 .ch{display:grid;grid-template-columns:1fr auto;gap:10px 16px;padding:14px 0;border-bottom:1px solid var(--line);align-items:start}
 .ch:last-child{border-bottom:0}
+.proofs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.pf{width:58px;height:58px;border-radius:8px;overflow:hidden;padding:0;border:1px solid var(--line);background:var(--panel-2);cursor:pointer;position:relative}
+.pf img,.pf video{width:100%;height:100%;object-fit:cover;display:block}
+.pf .play{position:absolute;inset:auto 3px 3px auto;font:700 9px/1 var(--f-mono);background:rgba(0,0,0,.6);color:#fff;padding:2px 4px;border-radius:3px}
 .ch-day{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px 12px;padding:18px 0 8px;border-bottom:2px solid var(--ink)}
 .ch-day:first-child{padding-top:0}
 .ch-day b{font:800 22px/1 var(--f-display);text-transform:uppercase;letter-spacing:.02em}
@@ -1253,6 +1257,73 @@ VIEWS.map = {
 
 /* ---------- THE CHALLENGES ---------- */
 let chFilter = "All";
+// Proof uploads live in the "vault" collection, tagged with the task id (ch).
+let proofFor = null;
+const visibleTask = id => { const c = allChallenges().find(x => x.id === id); return c && (!c.secret || (ME && ME !== c.secret)); };
+const proofsOf = id => D.vault.filter(v => v.ch === id).sort((a, b) => a.at - b.at);
+function proofThumbs(id) {
+  const ps = proofsOf(id); if (!ps.length) return "";
+  return `<div class="proofs">${ps.map(v => { const s = mediaSrc(v);
+    return `<button class="pf" type="button" data-shot="${h(v.id)}" aria-label="Open proof">${!s ? "" : v.kind === "video" ? `<video src="${h(s)}#t=0.1" muted preload="metadata" playsinline></video><span class="play">▶</span>` : `<img src="${h(s)}" alt="" loading="lazy">`}</button>`; }).join("")}</div>`;
+}
+function renderProofWall() {
+  const el = $("#proof-wall"); if (!el) return;
+  const items = D.vault.filter(v => v.ch && visibleTask(v.ch));
+  if (!items.length) { el.innerHTML = `<div class="empty">No proof yet. The first photo goes up from Kartepe.</div>`; return; }
+  const order = allChallenges().filter(c => visibleTask(c.id));
+  el.innerHTML = order.filter(c => proofsOf(c.id).length).map(c => `<div class="stack" style="gap:6px;margin-top:10px">
+      <div class="spread"><b>${h(c.t)}</b><span class="muted" style="font-size:13px">${c.day ? "Game Day " + (c.day - GAME_START_DAY + 1) : "Crew-made"} · ${proofsOf(c.id).length}</span></div>
+      <div class="gallery">${proofsOf(c.id).map(v => { const s = mediaSrc(v);
+        return `<button class="shot" type="button" data-shot="${h(v.id)}">${!s ? `<span class="ph">Loading…</span>` : v.kind === "video" ? `<video src="${h(s)}#t=0.1" muted preload="metadata" playsinline></video><span class="play">VIDEO</span>` : `<img src="${h(s)}" alt="" loading="lazy">`}
+          <span class="cap">${h(crewBy(v.by)?.name || "")}</span></button>`; }).join("")}</div></div>`).join("");
+  $$("#proof-wall [data-shot]").forEach(b => b.onclick = () => openShot(b.dataset.shot));
+}
+async function uploadProofs(files) {
+  const c = allChallenges().find(x => x.id === proofFor); if (!c || !files.length) return;
+  let n = 0;
+  for (const f of files) {
+    toast(`Uploading ${n + 1} of ${files.length}…`);
+    try { const up = await Store.upload(f);
+      await Store.put("vault", uid(), {...up, ch: c.id, cap: c.t, day: c.day || 0, by: ME, at: Date.now()}); n++;
+    } catch (err) { toast(errMsg(err)); return; }
+  }
+  toast(`${n} proof ${n > 1 ? "files" : "file"} added to “${c.t}”`);
+}
+// One shareable image from every proof photo (videos are skipped).
+async function makeCollage() {
+  const items = D.vault.filter(v => v.ch && v.kind !== "video" && visibleTask(v.ch)).sort((a, b) => (a.day - b.day) || (a.at - b.at));
+  if (!items.length) { toast("No proof photos yet."); return; }
+  toast("Building the collage…");
+  const load = v => new Promise(res => { const s = mediaSrc(v); if (!s) return res(null);
+    const im = new Image(); im.crossOrigin = "anonymous"; im.onload = () => res({im, v}); im.onerror = () => res(null); im.src = s; });
+  const imgs = (await Promise.all(items.map(load))).filter(Boolean);
+  if (!imgs.length) { toast("Photos are still loading. Try again in a few seconds."); return; }
+  const cols = Math.min(4, Math.ceil(Math.sqrt(imgs.length))), tile = 480, gap = 8, head = 150;
+  const rows = Math.ceil(imgs.length / cols);
+  const cv = document.createElement("canvas");
+  cv.width = cols * tile + (cols + 1) * gap; cv.height = head + rows * tile + (rows + 1) * gap;
+  const x = cv.getContext("2d");
+  x.fillStyle = "#0b1526"; x.fillRect(0, 0, cv.width, cv.height);
+  x.fillStyle = "#e0ac45"; x.font = "800 56px 'Big Shoulders Display', Impact, sans-serif"; x.fillText("UMANG'S BACHELOR TRIP", gap * 3, 72);
+  x.fillStyle = "#c9d1e0"; x.font = "500 26px 'Public Sans', sans-serif"; x.fillText("İstanbul · Sapanca · Thrace — November 2026", gap * 3, 118);
+  imgs.forEach(({im, v}, i) => {
+    const cx = gap + (i % cols) * (tile + gap), cy = head + gap + Math.floor(i / cols) * (tile + gap);
+    const s = Math.max(tile / im.width, tile / im.height), w = im.width * s, hh = im.height * s;
+    x.save(); x.beginPath(); x.rect(cx, cy, tile, tile); x.clip();
+    x.drawImage(im, cx + (tile - w) / 2, cy + (tile - hh) / 2, w, hh); x.restore();
+    const g = x.createLinearGradient(0, cy + tile - 70, 0, cy + tile); g.addColorStop(0, "rgba(0,0,0,0)"); g.addColorStop(1, "rgba(0,0,0,.75)");
+    x.fillStyle = g; x.fillRect(cx, cy + tile - 70, tile, 70);
+    x.fillStyle = "#fff"; x.font = "600 20px 'Public Sans', sans-serif";
+    x.fillText(`${v.cap || ""} · ${crewBy(v.by)?.name || ""}`.slice(0, 44), cx + 14, cy + tile - 18);
+  });
+  let blob;
+  try { blob = await new Promise((res, rej) => cv.toBlob(b => b ? res(b) : rej(new Error("empty")), "image/jpeg", 0.88)); }
+  catch { toast("The browser blocked the collage. Open the photos individually to save them."); return; }
+  const url = URL.createObjectURL(blob), a = document.createElement("a");
+  a.href = url; a.download = "umangs-bachelor-trip-collage.jpg"; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 30000);
+  toast(`Collage saved: ${imgs.length} photos`);
+}
 VIEWS.challenges = {
   shell() {
     return `<section class="view">
@@ -1261,6 +1332,13 @@ VIEWS.challenges = {
       <div class="panel"><h3>House rules</h3><ul class="plain" style="margin-top:10px">${RULES.map(r => `<li>${h(r)}</li>`).join("")}</ul></div>
       <div class="chips" id="ch-filter">${["All","Today","Crew-made"].map(f => `<button class="chip" type="button" data-f="${f}" aria-pressed="${f === chFilter}">${f}</button>`).join("")}</div>
       <div class="panel" id="ch-list"></div>
+      <input type="file" id="proof-file" accept="image/*,video/*" multiple hidden>
+      <div class="panel stack" id="proof-wall-panel">
+        <div class="spread"><div><div class="eyebrow"><span lang="tr">Kanıt</span> · Proof wall</div><h3 style="margin-top:6px">Every photo and video from the race</h3></div>
+          <button class="btn small primary" type="button" id="make-collage">Make collage</button></div>
+        <p class="muted" style="font-size:14px">Tap <b>Add proof</b> on any task to upload. At the end of the trip, <b>Make collage</b> turns every proof photo into one image you can save and share.</p>
+        <div id="proof-wall"></div>
+      </div>
       <form class="panel stack" id="dare-form"><h3>Propose a dare</h3>
         <div class="grid g2"><label class="f">Dare<input type="text" id="dare-t" maxlength="80" placeholder="e.g. Get a barber to give the groom a hot-towel shave" required></label>
         <label class="f">Points<select id="dare-p"><option>10</option><option selected>20</option><option>30</option><option>40</option></select></label></div>
@@ -1270,6 +1348,8 @@ VIEWS.challenges = {
   },
   mount() {
     $$("[data-f]").forEach(b => b.onclick = () => { chFilter = b.dataset.f; $$("[data-f]").forEach(x => x.setAttribute("aria-pressed", x === b)); this.update(); });
+    $("#proof-file").onchange = e => uploadProofs([...e.target.files]);
+    $("#make-collage").onclick = makeCollage;
     $("#dare-form").onsubmit = e => { e.preventDefault(); if (!needMe()) return;
       const t = $("#dare-t").value.trim(); if (!t) return;
       act(Store.put("challenges", uid(), {t, d: $("#dare-d").value.trim(), pts: +$("#dare-p").value, by: ME, at: Date.now()}), "Dare added").then(ok => { if (ok) { $("#dare-t").value = ""; $("#dare-d").value = ""; } }); };
@@ -1297,16 +1377,21 @@ VIEWS.challenges = {
       const isComp = !!c.comp;
       const typeCls = {Roadblock: "party", Detour: "turq", "Pit Stop": "warn"}[c.type] || "";
       return groupHead(c) + `<div class="ch"><div style="min-width:0"><div class="t">${h(c.t)}</div><div class="d">${h(c.d)}</div>
-          ${c.proof ? `<div class="d" style="margin-top:4px"><b>Proof:</b> ${h(c.proof)}</div>` : ""}</div>
+          ${c.proof ? `<div class="d" style="margin-top:4px"><b>Proof:</b> ${h(c.proof)}</div>` : ""}
+          ${proofThumbs(c.id)}</div>
         <div class="side"><span class="pts">+${c.pts}</span>
           ${isComp ? `<button class="btn small" type="button" data-win="${h(c.id)}">${who.length ? "Change winner" : "Record winner"}</button>`
                    : mine ? `<button class="btn small" type="button" data-undo="${h(mine.id)}">Undo</button>` : `<button class="btn small primary" type="button" data-did="${h(c.id)}">I did it</button>`}</div>
         <div class="meta"><span class="pill ${typeCls}">${h(c.type)}</span>${c.secret ? `<span class="pill warn">Secret · hidden from ${h(crewBy(c.secret)?.name || "")}</span>` : ""}
           ${who.length ? `<span class="avs">${who.map(x => avatar(x.crew)).join("")}</span><span class="muted" style="font-size:12px">${isComp ? "Winner: " : "Done by "}${who.map(x => h(crewBy(x.crew)?.name)).join(", ")}</span>` : ""}
+          <button class="link" type="button" data-proof="${h(c.id)}">+ Add proof</button>
           ${who.length && !isComp ? `<button class="link" type="button" data-strike="${h(c.id)}">Strike a claim</button>` : ""}
           ${c.by && (c.by === ME || Store.owner) ? `<button class="link" type="button" data-rmdare="${h(c.id)}" style="color:var(--coral)">Remove dare</button>` : ""}</div></div>`;
     }).join("")) || `<div class="empty">${chFilter === "Today" ? "No tasks today. Rest up." : "No crew-made dares yet. Propose one below."}</div>`;
-    $$("[data-did]").forEach(b => b.onclick = () => { if (!needMe()) return; act(Store.put("completions", b.dataset.did + "__" + ME, {ch: b.dataset.did, crew: ME, at: Date.now()}), "Claimed. Points added."); });
+    $$("[data-did]").forEach(b => b.onclick = () => { if (!needMe()) return; act(Store.put("completions", b.dataset.did + "__" + ME, {ch: b.dataset.did, crew: ME, at: Date.now()}), "Claimed. Add your proof photo below the task."); });
+    $$("[data-proof]").forEach(b => b.onclick = () => { if (!needMe()) return; proofFor = b.dataset.proof; $("#proof-file").value = ""; $("#proof-file").click(); });
+    $$("#ch-list [data-shot], #proof-wall [data-shot]").forEach(b => b.onclick = () => openShot(b.dataset.shot));
+    renderProofWall();
     $$("[data-undo]").forEach(b => b.onclick = () => act(Store.del("completions", b.dataset.undo), "Claim removed"));
     $$("[data-win]").forEach(b => b.onclick = () => pickCrew("Who won?", async k => {
       for (const x of D.completions.filter(x => x.ch === b.dataset.win)) await Store.del("completions", x.id);
@@ -1405,7 +1490,7 @@ function openShot(id) {
   const canRm = v.by === ME || Store.owner;
   const s = mediaSrc(v);
   openDialog(`${v.kind === "video" ? `<video src="${h(s)}" controls playsinline></video>` : `<img src="${h(s)}" alt="${h(v.cap || "")}">`}
-    <div class="dlg"><div class="spread"><div><b>${h(crewBy(v.by)?.name || "")}</b> <span class="muted">· ${v.day ? "Day " + v.day : "Before the trip"} · ${h(fmtTime(v.at))}</span></div>
+    <div class="dlg"><div class="spread"><div><b>${h(crewBy(v.by)?.name || "")}</b> <span class="muted">· ${v.ch && v.day ? "Game Day " + (v.day - GAME_START_DAY + 1) : v.day ? "Day " + v.day : "Before the trip"} · ${h(fmtTime(v.at))}</span></div>
     <div class="row">${canRm ? `<button class="btn small danger" type="button" id="rm-shot">Delete</button>` : ""}<button class="btn small" type="button" data-close>Close</button></div></div>
     ${v.cap ? `<p>${h(v.cap)}</p>` : ""}</div>`, "lightbox");
   if (canRm) $("#rm-shot").onclick = () => confirmBox("Delete this upload for everyone?", () => Store.del("vault", id));
