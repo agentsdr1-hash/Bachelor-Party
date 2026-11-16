@@ -554,6 +554,15 @@ const CHALLENGES = [
   {id:"g3-toast", day:5, type:"Roadblock", pts:20, t:"Captain's Toast",
     d:"On the yacht, one crew member gives Dev's send-off toast. It must include şerefe, one more Turkish word and one true fact about the Bosphorus. The crew votes pass or fail.",
     proof:"Video of the toast."},
+  {id:"g3-iyiki", day:5, type:"Route Info", pts:25, secret:"dev", t:"Three Strangers",
+    d:"Through the day, get three locals (a bazaar trader, a waiter, the yacht crew) to look Dev in the eye and say \u201cİyi ki doğdun, Dev!\u201d He won't know what it means until the toast.",
+    proof:"Three short videos."},
+  {id:"g3-smuggle", day:5, type:"Roadblock", pts:20, secret:"dev", t:"The Smuggler",
+    d:"At the Grand Bazaar, one crew member buys Dev a small Turkish keepsake (a nazar bead, a tavla set, a box of lokum) without him noticing. It gets handed over on the yacht.",
+    proof:"Dev's face when he opens it."},
+  {id:"g3-cake", day:5, type:"Pit Stop", pts:30, secret:"dev", t:"Dessert at Sea",
+    d:"Get the yacht crew to bring out künefe or baklava with a candle in it, timed to land right after the Captain's Toast. Arrange it quietly before boarding.",
+    proof:"The video, candle and all."},
   {id:"g4-blind", day:6, type:"Roadblock", pts:40, comp:true, t:"Blind Pour",
     d:"At Barbare, a blind pour for each taster: name the grape or the region. Umang pours and judges, so he can't compete. One winner.",
     proof:"Umang's verdict."},
@@ -1267,7 +1276,8 @@ VIEWS.challenges = {
   },
   update() {
     const today = tripDay();
-    const list = allChallenges().filter(c => chFilter === "All" || (chFilter === "Today" ? c.day === today : c.type === chFilter));
+    const list = allChallenges().filter(c => !c.secret || (ME && ME !== c.secret))
+      .filter(c => chFilter === "All" || (chFilter === "Today" ? c.day === today : c.type === chFilter));
     const comp = D.completions;
     const drop = ME && D.vault.some(v => v.by === ME && v.day === today && today);
     const dropRow = ORDER.some(o => o[0] === "vault") && (chFilter === "All" || chFilter === "Daily") ? `<div class="ch"><div><div class="t">Daily drop</div><div class="d">Post at least one photo in the Vault each trip day. Awarded automatically.</div></div>
@@ -1291,7 +1301,7 @@ VIEWS.challenges = {
         <div class="side"><span class="pts">+${c.pts}</span>
           ${isComp ? `<button class="btn small" type="button" data-win="${h(c.id)}">${who.length ? "Change winner" : "Record winner"}</button>`
                    : mine ? `<button class="btn small" type="button" data-undo="${h(mine.id)}">Undo</button>` : `<button class="btn small primary" type="button" data-did="${h(c.id)}">I did it</button>`}</div>
-        <div class="meta"><span class="pill ${typeCls}">${h(c.type)}</span>
+        <div class="meta"><span class="pill ${typeCls}">${h(c.type)}</span>${c.secret ? `<span class="pill warn">Secret · hidden from ${h(crewBy(c.secret)?.name || "")}</span>` : ""}
           ${who.length ? `<span class="avs">${who.map(x => avatar(x.crew)).join("")}</span><span class="muted" style="font-size:12px">${isComp ? "Winner: " : "Done by "}${who.map(x => h(crewBy(x.crew)?.name)).join(", ")}</span>` : ""}
           ${who.length && !isComp ? `<button class="link" type="button" data-strike="${h(c.id)}">Strike a claim</button>` : ""}
           ${c.by && (c.by === ME || Store.owner) ? `<button class="link" type="button" data-rmdare="${h(c.id)}" style="color:var(--coral)">Remove dare</button>` : ""}</div></div>`;
