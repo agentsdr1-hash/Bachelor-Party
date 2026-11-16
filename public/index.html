@@ -365,24 +365,22 @@ const DAYS = [
     ["6:30 PM","Back to the Airbnb to relax",null],
     ["10:00 PM","Night out: Karaköy or Asmalımescit bars, or across to Kadıköy's Kadife Sokak",null]],
     wear:"Shoes for Galata's steep hills and stairs. Pack flip-flops for the hamam; it provides the peştemal (towel wrap)."},
-  {n:5,date:"2026-11-18",dow:"Wed",label:"Wed Nov 18",title:"Palace, bazaar, night yacht",crew:"All 6 · Dev's last night",party:true,items:[
-    ["9:00 AM","Taxi to Sultanahmet (40 min)",null],
-    ["9:45 AM","Topkapı Palace (+ Harem). Allow 2–2.5 hrs","Topkapı Palace"],
-    ["12:15 PM","Archaeology Museums, next door inside Gülhane. 45 min highlights","Istanbul Archaeology Museums"],
-    ["1:15 PM","Lunch, then Grand Bazaar","Grand Bazaar Istanbul"],
-    ["3:30 PM","Süleymaniye Mosque terrace: sunset over the Golden Horn","Süleymaniye Mosque"],
-    ["8:00 PM","Private Bosphorus dinner yacht from Ortaköy pier. Dev's send-off","Ortaköy İskelesi"]],
-    wear:"Walking shoes for 15k steps of cobbles; mosque-appropriate trousers. Yacht: smart jacket, it is cold on the water."},
-  {n:6,date:"2026-11-19",dow:"Thu",label:"Thu Nov 19",title:"Tekirdağ wine day",crew:"Umang, Sagar, Abhi, Nick, Akshay",party:false,items:[
-    ["8:00 AM","Goodbye to Dev at the Airbnb",null],
+  {n:5,date:"2026-11-18",dow:"Wed",label:"Wed Nov 18",title:"Thrace wine day + big night out",crew:"All 6",party:true,items:[
+    ["8:00 AM","Breakfast",null],
     ["8:30 AM","Private van west to Thrace (drive ≈ 1.5 hrs)",null],
     ["10:30 AM","Chateau Nuzun tasting, Marmaraereğlisi (keep it short)","Chateau Nuzun Marmaraereğlisi"],
     ["12:30 PM","Tekirdağ köfte lunch","Tekirdağ köftecisi"],
-    ["1:15 PM","Dev: pre-booked taxi Airbnb → IST (≈ 50 min), flight 4:30 PM","Istanbul Airport"],
     ["2:00 PM","Barbare vineyard tasting, Barbaros","Barbare Winery Barbaros Tekirdağ"],
     ["4:00 PM","Drive back to the Airbnb (drive ≈ 2 hrs)",null],
+    ["6:00 PM","Rest and get ready",null],
+    ["9:00 PM","Dinner for six (book a table)",null],
+    ["10:30 PM","Big night out, pick one: a club table with bottle service (book ahead; dress code; groups of men need a reservation) or an escape room at Cicero Pirera, then drinks",null]],
+    wear:"Smart-casual for the wineries with a warm layer; it is windy in November. Night: collared shirt or sharp knit, leather shoes."},
+  {n:6,date:"2026-11-19",dow:"Thu",label:"Thu Nov 19",title:"Free morning, Dev flies home",crew:"All 6 → 5 after Dev leaves",party:false,items:[
+    ["Morning","Sleep in. Options: Topkapı Palace (+ Harem), or the Süleymaniye terrace over the Golden Horn","Topkapı Palace"],
+    ["1:15 PM","Dev: pre-booked taxi Airbnb → IST (≈ 50 min), flight 4:30 PM","Istanbul Airport"],
     ["Evening","Easy dinner in Ortaköy","Ortaköy"]],
-    wear:"Smart-casual for the wineries; warm layer, vineyards are windy in November."},
+    wear:"Comfortable; trousers and covered shoulders if you visit a mosque."},
   {n:7,date:"2026-11-20",dow:"Fri",label:"Fri Nov 20",title:"Rest day, club night",crew:"5",party:true,items:[
     ["Morning","Sleep in",null],
     ["11:30 AM","Bebek waterfront breakfast","Bebek Istanbul"],
@@ -521,8 +519,8 @@ const BOOKINGS = [
   ["Sapanca bungalow with heated pool and jacuzzi (Mon night)",""],
   ["Kartepe cable car, ATV/zipline, Ormanya or horse riding",""],
   ["Kılıç Ali Paşa Hamam group slot, Tue 4:30 PM men's session",""],
-  ["Private Bosphorus dinner yacht, Ortaköy pier (Wed): confirm food included",""],
-  ["Winery tastings: Chateau Nuzun + Barbare (Thu): confirm off-season hours",""],
+  ["Big night out (Wed): club table with bottle service, or escape room at Cicero Pirera",""],
+  ["Winery tastings: Chateau Nuzun + Barbare, moved to Wed: re-confirm both slots and the van",""],
   ["Dev's taxi to IST (Thu 1:15 PM)",""],
   ["Oligark dinner + VIP table (Fri)",""],
   ["360 Istanbul (Sat)",""],
@@ -559,22 +557,22 @@ const CHALLENGES = [
   {id:"g2-tavla", day:4, type:"Route Info", pts:30, t:"Tavla Hall",
     d:"Find a kahvehane in Kadıköy and challenge the regulars to tavla (backgammon). The crew scores if anyone beats a local.",
     proof:"Photo with your opponent."},
-  {id:"g3-bazaar", day:5, type:"Detour", pts:25, t:"Haggle or Hunt",
-    d:"Grand Bazaar. Haggle: get 30% off a gift for the bride, cash only. Hunt: find a shop that sells only one thing and get a photo with the owner.",
+  {id:"g3-bazaar", day:6, type:"Detour", pts:25, t:"Haggle or Hunt",
+    d:"Spice Bazaar or Arasta Bazaar. Haggle: get 30% off a gift for the bride, cash only. Hunt: find a shop that sells only one thing and get a photo with the owner.",
     proof:"Receipt or photo."},
-  {id:"g3-toast", day:5, type:"Roadblock", pts:20, t:"Captain's Toast",
-    d:"Give Dev's send-off toast on the yacht. Include şerefe and one Bosphorus fact. The crew votes pass or fail.",
+  {id:"g3-toast", day:5, type:"Roadblock", pts:20, t:"The Toast",
+    d:"Tonight, give a toast to Dev at the table: he flies home tomorrow. Include şerefe and one thing nobody else in the crew knows about him. The crew votes pass or fail.",
     proof:"Video of the toast."},
   {id:"g3-iyiki", day:5, type:"Route Info", pts:25, secret:"dev", t:"Three Strangers",
-    d:"Get three locals to tell Dev \u201cİyi ki doğdun!\u201d during the day. He finds out what it means at the toast.",
+    d:"Get three locals (a winemaker, a waiter, a bartender) to tell Dev \u201cİyi ki doğdun!\u201d during the day. He finds out what it means at the toast.",
     proof:"Three short videos."},
-  {id:"g3-cake", day:5, type:"Pit Stop", pts:30, secret:"dev", t:"Dessert at Sea",
-    d:"Have the yacht crew bring out a dessert with a candle right after the toast. Set it up before boarding.",
+  {id:"g3-cake", day:5, type:"Pit Stop", pts:30, secret:"dev", t:"Sparkler Parade",
+    d:"Get the bottle brought to the table with sparklers and Dev's name on a sign, right after the toast. Set it up with the venue when you book.",
     proof:"The video."},
-  {id:"g4-blind", day:6, type:"Roadblock", pts:40, comp:true, t:"Blind Pour",
+  {id:"g4-blind", day:5, type:"Roadblock", pts:40, comp:true, t:"Blind Pour",
     d:"At Barbare, name the grape or the region from a blind pour. Umang pours and judges.",
     proof:"Umang's verdict."},
-  {id:"g4-barrel", day:6, type:"Route Info", pts:25, t:"Off the List",
+  {id:"g4-barrel", day:5, type:"Route Info", pts:25, t:"Off the List",
     d:"Talk the winemaker into pouring something that isn't on the tasting menu: a barrel sample or a bottle they keep for themselves.",
     proof:"Photo of the glass and the winemaker."},
   {id:"g5-barber", day:7, type:"Route Info", pts:30, t:"The Barber",
@@ -1359,7 +1357,8 @@ VIEWS.challenges = {
   },
   update() {
     const today = tripDay();
-    const list = allChallenges().filter(c => !c.secret || (ME && ME !== c.secret))
+    const list = allChallenges().map((c, i) => [c, i]).sort((a, b) => ((a[0].day || 99) - (b[0].day || 99)) || (a[1] - b[1])).map(x => x[0])
+      .filter(c => !c.secret || (ME && ME !== c.secret))
       .filter(c => chFilter === "All" || (chFilter === "Today" ? c.day === today : chFilter === "Solo" || chFilter === "Team" ? modeOf(c) === chFilter : c.type === chFilter));
     const comp = D.completions;
     const drop = ME && D.vault.some(v => v.by === ME && v.day === today && today);
