@@ -555,7 +555,6 @@ const RULES = [
   "No dares inside mosques, the hamam, or anywhere a dress code or prayer time applies.",
   "Photo or witness required. Any two crew members can strike a claim.",
   "Each challenge counts once per person. Competitions have one winner unless the groom rules a tie.",
-  "Daily drop: first photo you post in the Vault each trip day earns 5 points automatically.",
 ];
 const PUNISHMENTS = [
   "Buys the first round at 360 Istanbul (drinks run about 2× home prices).",
@@ -806,6 +805,7 @@ const ORDER = [
   ["intel","Essentials","Flights, base, logistics, packing"],
   ["itinerary","The Itinerary","Nine days, times and maps"],
   ["map","The Map","Every stop on one map"],
+  ["challenges","The Challenges","Games, dares, competitions"],
   ["polls","The Polls","Live votes on what's next"],
   ["leaderboard","The Leaderboard","Points, awards, punishments"],
 ];
@@ -1246,7 +1246,7 @@ VIEWS.challenges = {
     const list = allChallenges().filter(c => chFilter === "All" || c.cat === chFilter);
     const comp = D.completions;
     const drop = ME && D.vault.some(v => v.by === ME && v.day === today && today);
-    const dropRow = (chFilter === "All" || chFilter === "Daily") ? `<div class="ch"><div><div class="t">Daily drop</div><div class="d">Post at least one photo in the Vault each trip day. Awarded automatically.</div></div>
+    const dropRow = ORDER.some(o => o[0] === "vault") && (chFilter === "All" || chFilter === "Daily") ? `<div class="ch"><div><div class="t">Daily drop</div><div class="d">Post at least one photo in the Vault each trip day. Awarded automatically.</div></div>
       <div class="side"><span class="pts">+${DAILY_DROP_PTS}/day</span>${today ? (drop ? `<span class="pill ok">Done today</span>` : `<a class="btn small" href="#vault">Upload</a>`) : ""}</div></div>` : "";
     $("#ch-list").innerHTML = (dropRow + list.map(c => {
       const who = comp.filter(x => x.ch === c.id);
@@ -1483,7 +1483,7 @@ VIEWS.leaderboard = {
 let current = null, raf = 0;
 function route(force = false) {
   const k = (location.hash || "").slice(1);
-  const HIDDEN = ["challenges", "vault"]; // hidden for now; remove from this list to bring it back
+  const HIDDEN = ["vault"]; // hidden for now; remove from this list to bring it back
   const name = VIEWS[k] && !HIDDEN.includes(k) ? k : "mission";
   if (name === current && !force) return;
   current = name;
