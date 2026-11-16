@@ -582,6 +582,9 @@ const CHALLENGES = [
   {id:"g6-finale", day:8, type:"Pit Stop", pts:30, t:"Final Pit Stop",
     d:"Recreate the crew's first group photo of the trip on the 360 İstanbul terrace. Whole crew, one take.",
     proof:"Both photos side by side."},
+  {id:"any-sultan", day:null, anyday:true, type:"Route Info", pts:25, t:"The Sultan's First",
+    d:"Get Umang to try something he has never done before: a food, a game, a dance, a ride, anything. He has to admit it's a first.",
+    proof:"Photo of the Sultan mid-attempt, uploaded here."},
 ];
 const DAILY_DROP_PTS = 5;
 const RULES = [
@@ -1274,7 +1277,7 @@ function renderProofWall() {
   if (!items.length) { el.innerHTML = `<div class="empty">No proof yet. Add the first one from any task above.</div>`; return; }
   const order = allChallenges().filter(c => visibleTask(c.id));
   el.innerHTML = order.filter(c => proofsOf(c.id).length).map(c => `<div class="stack" style="gap:6px;margin-top:10px">
-      <div class="spread"><b>${h(c.t)}</b><span class="muted" style="font-size:13px">${c.day ? "Game Day " + (c.day - GAME_START_DAY + 1) : "Crew-made"} · ${proofsOf(c.id).length}</span></div>
+      <div class="spread"><b>${h(c.t)}</b><span class="muted" style="font-size:13px">${c.day ? "Game Day " + (c.day - GAME_START_DAY + 1) : c.anyday ? "Any day" : "Crew-made"} · ${proofsOf(c.id).length}</span></div>
       <div class="gallery">${proofsOf(c.id).map(v => { const s = mediaSrc(v);
         return `<button class="shot" type="button" data-shot="${h(v.id)}">${!s ? `<span class="ph">Loading…</span>` : v.kind === "video" ? `<video src="${h(s)}#t=0.1" muted preload="metadata" playsinline></video><span class="play">VIDEO</span>` : `<img src="${h(s)}" alt="" loading="lazy">`}
           <span class="cap">${h(crewBy(v.by)?.name || "")}</span></button>`; }).join("")}</div></div>`).join("");
@@ -1358,18 +1361,19 @@ VIEWS.challenges = {
   },
   update() {
     const today = tripDay();
-    const list = allChallenges().map((c, i) => [c, i]).sort((a, b) => ((a[0].day || 99) - (b[0].day || 99)) || (a[1] - b[1])).map(x => x[0])
+    const list = allChallenges().map((c, i) => [c, i]).sort((a, b) => ((a[0].day || (a[0].anyday ? 98 : 99)) - (b[0].day || (b[0].anyday ? 98 : 99))) || (a[1] - b[1])).map(x => x[0])
       .filter(c => !c.secret || (ME && ME !== c.secret))
-      .filter(c => chFilter === "All" || (chFilter === "Today" ? c.day === today : chFilter === "Solo" || chFilter === "Team" ? modeOf(c) === chFilter : c.type === chFilter));
+      .filter(c => chFilter === "All" || (chFilter === "Today" ? (c.day === today || c.anyday) : chFilter === "Solo" || chFilter === "Team" ? modeOf(c) === chFilter : c.type === chFilter));
     const comp = D.completions;
     const drop = ME && D.vault.some(v => v.by === ME && v.day === today && today);
     const dropRow = ORDER.some(o => o[0] === "vault") && (chFilter === "All" || chFilter === "Daily") ? `<div class="ch"><div><div class="t">Daily drop</div><div class="d">Post at least one photo in the Vault each trip day. Awarded automatically.</div></div>
       <div class="side"><span class="pts">+${DAILY_DROP_PTS}/day</span>${today ? (drop ? `<span class="pill ok">Done today</span>` : `<a class="btn small" href="#vault">Upload</a>`) : ""}</div></div>` : "";
     let lastGroup = null;
     const groupHead = c => {
-      const g = c.day ? "d" + c.day : "crew";
+      const g = c.day ? "d" + c.day : c.anyday ? "any" : "crew";
       if (g === lastGroup) return "";
       lastGroup = g;
+      if (c.anyday) return `<div class="ch-day"><b>Any day</b><span>Do it whenever the moment comes</span></div>`;
       if (!c.day) return `<div class="ch-day"><b>Crew-made dares</b></div>`;
       const d = DAYS[c.day - 1];
       return `<div class="ch-day"><b>Game Day ${c.day - GAME_START_DAY + 1}</b><span>${h(d.label)} · ${h(d.title)}</span>${c.day === today ? `<span class="pill party">Today</span>` : ""}</div>`;
