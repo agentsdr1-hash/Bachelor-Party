@@ -417,11 +417,6 @@ const PLACES = {
   "Hagia Sophia": [41.0086, 28.9802],
   "Basilica Cistern": [41.0084, 28.9779],
   "Asmalımescit Beyoğlu": [41.0312, 28.9745],
-  "Kartepe Teleferik Maşukiye": [40.7050, 30.1470],
-  "Maşukiye Kartepe": [40.7095, 30.1510],
-  "Sapanca": [40.6917, 30.2683],
-  "Sapanca Gölü": [40.7190, 30.2520],
-  "Ormanya Kartepe": [40.7550, 30.0080],
   "Kılıç Ali Paşa Hamamı": [41.0257, 28.9802],
   "Karaköy İskelesi": [41.0218, 28.9768],
   "Kadife Sokak Kadıköy": [40.9868, 29.0283],
@@ -511,20 +506,19 @@ const ATTRACTIONS = [
   ...EXTRA_SIGHTS.map(([name, , , when, note]) => [name, when, note]),
 ];
 const TRAVEL = [["Oligark, Ortaköy pier, Beşiktaş, Dolmabahçe","5–10 min"],["Beyoğlu / İstiklal / Karaköy","20–30 min"],["Sultanahmet (Old City)","35–50 min"],["Istanbul Airport (IST)","45–60 min"]];
-const PACKING = ["Waterproof shell + compact umbrella","One proper going-out outfit with leather shoes (Oligark)","Trousers that cover knees + top that covers shoulders","Hiking/trail shoes for Kartepe and Maşukiye","Swimwear (bungalow pool + jacuzzi)","Warm mid-layer: fleece or knit","Power bank and EU plug adapter (Type C/F, 230V)","Flip-flops for the hamam","Passport + e-visa printout if your passport needs one"];
+const PACKING = ["Waterproof shell + compact umbrella","One proper going-out outfit with leather shoes (Oligark)","Trousers that cover knees + top that covers shoulders","Warm mid-layer: fleece or knit","Power bank and EU plug adapter (Type C/F, 230V)","Flip-flops for the hamam","Passport + e-visa printout if your passport needs one"];
+// [text, owner, id]. Ids are fixed: ticks are stored per id, so removing a line never shifts the others.
 const BOOKINGS = [
-  ["Airbnb early check-in: Umang (6 AM Sat) and Dev (5 AM Sun)","Umang"],
-  ["Online tickets: Hagia Sophia, Topkapı (+ Harem), Basilica Cistern",""],
-  ["Private van + driver: Sapanca (Mon–Tue) and wine day (Thu)",""],
-  ["Sapanca bungalow with heated pool and jacuzzi (Mon night)",""],
-  ["Kartepe cable car, ATV/zipline, Ormanya or horse riding",""],
-  ["Kılıç Ali Paşa Hamam group slot, Tue 4:30 PM men's session",""],
-  ["Big night out (Wed): club table with bottle service, or escape room at Cicero Pirera",""],
-  ["Winery tastings: Chateau Nuzun + Barbare, moved to Wed: re-confirm both slots and the van",""],
-  ["Dev's taxi to IST (Thu 1:15 PM)",""],
-  ["Oligark dinner + VIP table (Fri)",""],
-  ["360 Istanbul (Sat)",""],
-  ["Airport transfers: Sagar Sat 5:30 PM · Akshay Sun 3:00 AM · Abhi Sun 4:30 AM · Umang + Nick Sun 11:30 AM",""],
+  ["Airbnb early check-in: Umang (6 AM Sat) and Dev (5 AM Sun)","Umang","b0"],
+  ["Online tickets: Hagia Sophia, Topkapı (+ Harem), Basilica Cistern","","b1"],
+  ["Private van + driver for the wine day (Wed)","","b2"],
+  ["Kılıç Ali Paşa Hamam group slot, Tue 4:30 PM men's session","","b5"],
+  ["Big night out (Wed): club table with bottle service, or escape room at Cicero Pirera","","b6"],
+  ["Winery tastings: Chateau Nuzun + Barbare, moved to Wed: re-confirm both slots and the van","","b7"],
+  ["Dev's taxi to IST (Thu 1:15 PM)","","b8"],
+  ["Oligark dinner + VIP table (Fri)","","b9"],
+  ["360 Istanbul (Sat)","","b10"],
+  ["Airport transfers: Sagar Sat 5:30 PM · Akshay Sun 3:00 AM · Abhi Sun 4:30 AM · Umang + Nick Sun 11:30 AM","","b11"],
 ];
 const RISKS = [
   "All-male groups can be turned away at the door. Book tables in advance.",
@@ -533,7 +527,6 @@ const RISKS = [
   "Alcohol is heavily taxed; budget about 2× for drinks.",
   "Grand Bazaar closed Sundays; Topkapı closed Tuesdays; Dolmabahçe closed Mondays.",
   "Blue Mosque and Hagia Sophia close to visitors at prayer times; avoid Friday midday.",
-  "Sapanca drives can stretch past 2 hrs in traffic; leave by noon on Tuesday.",
   "Confirm every airport: IST vs Sabiha Gökçen (SAW) is a 90-minute difference.",
 ];
 
@@ -545,21 +538,18 @@ const RISKS = [
 const GAME_START_DAY = 3;
 const modeOf = c => c.mode || (c.type === "Roadblock" || c.comp ? "Solo" : c.type === "Crew-made" ? "" : "Team");
 const CHALLENGES = [
-  {id:"g1-summit", day:3, type:"Detour", pts:20, t:"Summit or Spray",
-    d:"Pick one. Summit: crew jump shot at the Kartepe top station, lake behind. Spray: crew photo at the Maşukiye waterfalls, close enough to get wet.",
-    proof:"The photo."},
-  {id:"g1-trout", day:3, type:"Roadblock", pts:25, t:"Trout Whisperer",
-    d:"Order lunch for the whole table in Turkish. No phone, no pointing.",
+  {id:"g1-trout", day:3, type:"Roadblock", pts:25, t:"Order Like a Local",
+    d:"Order the crew's Turkish coffee and desserts in Turkish. No phone, no pointing.",
     proof:"Video of the order."},
+  {id:"g3-bazaar", day:3, type:"Detour", pts:25, t:"Haggle or Hunt",
+    d:"Grand Bazaar. Haggle: get 30% off a gift for the bride, cash only. Hunt: find a shop that sells only one thing and get a photo with the owner.",
+    proof:"Receipt or photo."},
   {id:"g2-ferry", day:4, type:"Roadblock", pts:20, t:"Ferry Navigator",
-    d:"On the Kadıköy ferry, get a local to name three landmarks for you on camera.",
+    d:"On the 11:15 ferry to Karaköy, get a local to name three landmarks for you on camera.",
     proof:"The video."},
   {id:"g2-tavla", day:4, type:"Route Info", pts:30, t:"Tavla Hall",
-    d:"Find a kahvehane in Kadıköy and challenge the regulars to tavla (backgammon). The crew scores if anyone beats a local.",
+    d:"Find a kahvehane in Tophane or Karaköy and challenge the regulars to tavla (backgammon). The crew scores if anyone beats a local.",
     proof:"Photo with your opponent."},
-  {id:"g3-bazaar", day:6, type:"Detour", pts:25, t:"Haggle or Hunt",
-    d:"Spice Bazaar or Arasta Bazaar. Haggle: get 30% off a gift for the bride, cash only. Hunt: find a shop that sells only one thing and get a photo with the owner.",
-    proof:"Receipt or photo."},
   {id:"g3-toast", day:5, type:"Roadblock", pts:20, t:"The Toast",
     d:"Tonight, give a toast to Dev at the table: he flies home tomorrow. Include şerefe and one thing nobody else in the crew knows about him. The crew votes pass or fail.",
     proof:"Video of the toast."},
@@ -575,6 +565,9 @@ const CHALLENGES = [
   {id:"g4-barrel", day:5, type:"Route Info", pts:25, t:"Off the List",
     d:"Talk the winemaker into pouring something that isn't on the tasting menu: a barrel sample or a bottle they keep for themselves.",
     proof:"Photo of the glass and the winemaker."},
+  {id:"g4-lira", day:6, type:"Roadblock", pts:30, comp:true, t:"200 Lira Gift",
+    d:"Thursday morning at the Beşiktaş market: everyone gets 200 TL and 45 minutes to haggle for the best gift for Umang. Umang picks the winner.",
+    proof:"Photo of the gifts lined up."},
   {id:"g5-barber", day:7, type:"Route Info", pts:30, t:"The Barber",
     d:"Friday afternoon, find a traditional Turkish barber. At least three of the crew get the full treatment: hot towel, straight razor, flame on the ears. Umang goes first.",
     proof:"Before and after."},
@@ -585,7 +578,7 @@ const CHALLENGES = [
     d:"Ride the red İstiklal tram from Taksim to Tünel, one at a time. Fastest door to door wins. Walk it if the tram isn't running.",
     proof:"Start and finish photos with timestamps."},
   {id:"g6-finale", day:8, type:"Pit Stop", pts:30, t:"Final Pit Stop",
-    d:"Recreate the Day 1 jump shot on the 360 İstanbul terrace. Whole crew, one take.",
+    d:"Recreate the crew's first group photo of the trip on the 360 İstanbul terrace. Whole crew, one take.",
     proof:"Both photos side by side."},
 ];
 const DAILY_DROP_PTS = 5;
@@ -856,7 +849,7 @@ VIEWS.mission = {
         <canvas class="skyline" aria-hidden="true"></canvas>
         <div class="eyebrow"><span lang="tr">Hoş geldiniz</span> · İstanbul · November 2026 · 41.047° N 29.027° E</div>
         <h1>Umang's Bachelor Trip</h1>
-        <p class="sub">A guide to nine days of Bosphorus nights, mountain mornings and Thracian wine, celebrating Umang before he says yes.</p>
+        <p class="sub">A guide to nine days of Bosphorus nights, Old City days and Thracian wine, celebrating Umang before he says yes.</p>
         <div class="cds">
           <div class="cd-block"><div class="cd-label" id="cd-label"></div><div class="cd-title" id="cd-title"></div>
             <div class="countdown" id="cd"></div><div class="cd-sub" id="cd-sub"></div></div>
@@ -1088,9 +1081,9 @@ VIEWS.intel = {
   },
   update() {
     const done = Object.fromEntries(D.bookings.map(b => [b.id, b]));
-    $("#bookings").innerHTML = BOOKINGS.map(([t, owner], i) => { const b = done["b" + i]; return `<label class="check ${b && b.done ? "done" : ""}"><input type="checkbox" id="bk-${i}" data-book="${i}" ${b && b.done ? "checked" : ""}><span>${h(t)}${owner ? ` <span class="muted">· ${h(owner)}</span>` : ""}${b && b.done && b.by ? ` <span class="muted" style="font-size:12px">· ticked by ${h(crewBy(b.by)?.name || "crew")}</span>` : ""}</span></label>`; }).join("");
-    $("#book-count").textContent = `${BOOKINGS.filter((_, i) => done["b" + i]?.done).length}/${BOOKINGS.length} confirmed`;
-    $$("[data-book]").forEach(cb => cb.onchange = () => act(Store.put("bookings", "b" + cb.dataset.book, {done: cb.checked, by: ME || "", at: Date.now()})));
+    $("#bookings").innerHTML = BOOKINGS.map(([t, owner, id]) => { const b = done[id]; return `<label class="check ${b && b.done ? "done" : ""}"><input type="checkbox" id="bk-${id}" data-book="${id}" ${b && b.done ? "checked" : ""}><span>${h(t)}${owner ? ` <span class="muted">· ${h(owner)}</span>` : ""}${b && b.done && b.by ? ` <span class="muted" style="font-size:12px">· ticked by ${h(crewBy(b.by)?.name || "crew")}</span>` : ""}</span></label>`; }).join("");
+    $("#book-count").textContent = `${BOOKINGS.filter(([, , id]) => done[id]?.done).length}/${BOOKINGS.length} confirmed`;
+    $$("[data-book]").forEach(cb => cb.onchange = () => act(Store.put("bookings", cb.dataset.book, {done: cb.checked, by: ME || "", at: Date.now()})));
     // Planning backlog
     const ideas = D.bookings.filter(isIdea);
     const upCount = i => Object.values(i.ups || {}).filter(Boolean).length;
@@ -1188,7 +1181,7 @@ VIEWS.map = {
       <p>Every stop from the itinerary, colored by day. Tap a pin for the plan and directions. Pins are approximate; Google Maps has the exact spot.</p></div>
       <div class="chips" id="map-days">${[["all", "All days"], ...DAYS.map(d => [String(d.n), `Day ${d.n} · ${d.dow}`])].map(([v, l]) =>
         `<button class="chip" type="button" data-md="${v}" aria-pressed="${mapDay === v}">${l}</button>`).join("")}</div>
-      <div class="row"><button class="btn small" type="button" id="map-city">Istanbul</button><button class="btn small" type="button" id="map-all">Whole trip (Sapanca + Thrace)</button><button class="btn small" type="button" id="map-base">Base</button></div>
+      <div class="row"><button class="btn small" type="button" id="map-city">Istanbul</button><button class="btn small" type="button" id="map-all">Whole trip (incl. Thrace)</button><button class="btn small" type="button" id="map-base">Base</button></div>
       <div class="map-box" id="map"><div class="empty" style="border:0;height:100%;display:grid;place-items:center">Loading map…</div></div>
       <div class="map-list" id="map-list"></div>
     </section>`;
@@ -1270,7 +1263,7 @@ function proofThumbs(id) {
 function renderProofWall() {
   const el = $("#proof-wall"); if (!el) return;
   const items = D.vault.filter(v => v.ch && visibleTask(v.ch));
-  if (!items.length) { el.innerHTML = `<div class="empty">No proof yet. The first photo goes up from Kartepe.</div>`; return; }
+  if (!items.length) { el.innerHTML = `<div class="empty">No proof yet. Add the first one from any task above.</div>`; return; }
   const order = allChallenges().filter(c => visibleTask(c.id));
   el.innerHTML = order.filter(c => proofsOf(c.id).length).map(c => `<div class="stack" style="gap:6px;margin-top:10px">
       <div class="spread"><b>${h(c.t)}</b><span class="muted" style="font-size:13px">${c.day ? "Game Day " + (c.day - GAME_START_DAY + 1) : "Crew-made"} · ${proofsOf(c.id).length}</span></div>
@@ -1306,7 +1299,7 @@ async function makeCollage() {
   const x = cv.getContext("2d");
   x.fillStyle = "#0b1526"; x.fillRect(0, 0, cv.width, cv.height);
   x.fillStyle = "#e0ac45"; x.font = "800 56px 'Big Shoulders Display', Impact, sans-serif"; x.fillText("UMANG'S BACHELOR TRIP", gap * 3, 72);
-  x.fillStyle = "#c9d1e0"; x.font = "500 26px 'Public Sans', sans-serif"; x.fillText("İstanbul · Sapanca · Thrace — November 2026", gap * 3, 118);
+  x.fillStyle = "#c9d1e0"; x.font = "500 26px 'Public Sans', sans-serif"; x.fillText("İstanbul · Thrace — November 2026", gap * 3, 118);
   imgs.forEach(({im, v}, i) => {
     const cx = gap + (i % cols) * (tile + gap), cy = head + gap + Math.floor(i / cols) * (tile + gap);
     const s = Math.max(tile / im.width, tile / im.height), w = im.width * s, hh = im.height * s;
@@ -1329,7 +1322,7 @@ VIEWS.challenges = {
   shell() {
     return `<section class="view">
       <div class="head"><div class="eyebrow"><span lang="tr">Görevler</span> · The race</div><h2>The Challenges</h2>
-      <p>Two tasks a day, from Kartepe to the final night. Points go to the leaderboard.</p></div>
+      <p>Two tasks a day, from the Old City to the final night. Points go to the leaderboard.</p></div>
       <div class="panel"><h3>House rules</h3><ul class="plain" style="margin-top:10px">${RULES.map(r => `<li>${h(r)}</li>`).join("")}</ul></div>
       <div class="chips" id="ch-filter">${["All","Today","Solo","Team","Crew-made"].map(f => `<button class="chip" type="button" data-f="${f}" aria-pressed="${f === chFilter}">${f}</button>`).join("")}</div>
       <div class="panel" id="ch-list"></div>
@@ -1564,7 +1557,7 @@ VIEWS.leaderboard = {
           <p class="muted" style="font-size:14px">Bonus or penalty points, with a reason the crew can see.</p>
           <div class="grid g2"><label class="f">Who<select id="dc-who">${CREW.map(c => `<option value="${c.key}">${h(c.name)}</option>`).join("")}</select></label>
           <label class="f">Points (+ or −)<input type="number" id="dc-pts" value="10" step="5" min="-100" max="100"></label></div>
-          <label class="f">Reason<input type="text" id="dc-why" maxlength="120" placeholder="Carried the cooler up Kartepe" required></label>
+          <label class="f">Reason<input type="text" id="dc-why" maxlength="120" placeholder="Carried the wine back from Barbare" required></label>
           <div><button class="btn primary" type="submit">Issue decree</button></div></form>` : `<div class="panel stack" id="decrees-only"><h3>Groom's decrees</h3><div id="decrees"></div></div>`}
       </div>
       ${judge ? `<div class="panel stack"><h3>Decree log</h3><div id="decrees"></div></div>` : ""}
