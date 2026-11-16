@@ -539,6 +539,7 @@ const RISKS = [
 // The race: two tasks a game day, built on that day's plan. day = trip day; Game Day 1 = trip Day 3 (Mon Nov 16).
 // type: Roadblock (one person), Detour (pick one of two), Route Info (whole crew), Pit Stop (finale). comp = single winner.
 const GAME_START_DAY = 3;
+const modeOf = c => c.mode || (c.type === "Roadblock" || c.comp ? "Solo" : c.type === "Crew-made" ? "" : "Team");
 const CHALLENGES = [
   {id:"g1-summit", day:3, type:"Detour", pts:20, t:"Summit or Spray",
     d:"Summit: at the top station of the Kartepe cable car, a jump shot with every crew member in the air and the lake behind. Spray: at the Maşukiye waterfalls, a crew photo close enough to get wet.",
@@ -582,6 +583,9 @@ const CHALLENGES = [
   {id:"g6-split", day:8, type:"Detour", pts:25, t:"Split Squads",
     d:"The crew splits this morning. Cistern squad: find both Medusa heads and photograph each. Museum squad: find a carpet more than 500 years old and photograph its label.",
     proof:"The photos. Each squad claims for itself."},
+  {id:"g6-tram", day:8, type:"Roadblock", pts:25, comp:true, t:"Tram Dash",
+    d:"On the way to 360 İstanbul, one at a time: ride the red nostalgic tram along İstiklal from Taksim to Tünel (or as far as it goes) and post a photo from the last stop. Fastest door-to-door time wins.",
+    proof:"Start and finish photos in the chat, with timestamps."},
   {id:"g6-finale", day:8, type:"Pit Stop", pts:30, t:"Final Pit Stop",
     d:"At 360 İstanbul, recreate the Game Day 1 jump shot on the terrace with the city lit up behind you. Whole crew, one take.",
     proof:"The photo, next to the Day 1 one."},
@@ -589,7 +593,7 @@ const CHALLENGES = [
 const DAILY_DROP_PTS = 5;
 const RULES = [
   "Two tasks a day from Sapanca to the final night, set where the plan already takes you.",
-  "Roadblock: one crew member does it and claims it. Detour: the crew picks one of the two options. Route Info and Pit Stop: everyone who takes part claims.",
+  "Every game day mixes solo and team events. Solo: Roadblocks and head-to-head races, one person claims. Team: Detours, Route Info and Pit Stops, everyone who takes part claims.",
   "Proof goes in the group chat: the photo or video named in the task. Any two crew members can strike a claim.",
   "No tasks inside mosques or the hamam, or at prayer time.",
 ];
@@ -1330,7 +1334,7 @@ VIEWS.challenges = {
       <div class="head"><div class="eyebrow"><span lang="tr">Görevler</span> · The race</div><h2>The Challenges</h2>
       <p>A race across Turkey: two tasks a day, from the Kartepe summit to the final night at 360 İstanbul. Claim a task when it's done; points land on the leaderboard.</p></div>
       <div class="panel"><h3>House rules</h3><ul class="plain" style="margin-top:10px">${RULES.map(r => `<li>${h(r)}</li>`).join("")}</ul></div>
-      <div class="chips" id="ch-filter">${["All","Today","Crew-made"].map(f => `<button class="chip" type="button" data-f="${f}" aria-pressed="${f === chFilter}">${f}</button>`).join("")}</div>
+      <div class="chips" id="ch-filter">${["All","Today","Solo","Team","Crew-made"].map(f => `<button class="chip" type="button" data-f="${f}" aria-pressed="${f === chFilter}">${f}</button>`).join("")}</div>
       <div class="panel" id="ch-list"></div>
       <input type="file" id="proof-file" accept="image/*,video/*" multiple hidden>
       <div class="panel stack" id="proof-wall-panel">
@@ -1357,7 +1361,7 @@ VIEWS.challenges = {
   update() {
     const today = tripDay();
     const list = allChallenges().filter(c => !c.secret || (ME && ME !== c.secret))
-      .filter(c => chFilter === "All" || (chFilter === "Today" ? c.day === today : c.type === chFilter));
+      .filter(c => chFilter === "All" || (chFilter === "Today" ? c.day === today : chFilter === "Solo" || chFilter === "Team" ? modeOf(c) === chFilter : c.type === chFilter));
     const comp = D.completions;
     const drop = ME && D.vault.some(v => v.by === ME && v.day === today && today);
     const dropRow = ORDER.some(o => o[0] === "vault") && (chFilter === "All" || chFilter === "Daily") ? `<div class="ch"><div><div class="t">Daily drop</div><div class="d">Post at least one photo in the Vault each trip day. Awarded automatically.</div></div>
@@ -1382,7 +1386,7 @@ VIEWS.challenges = {
         <div class="side"><span class="pts">+${c.pts}</span>
           ${isComp ? `<button class="btn small" type="button" data-win="${h(c.id)}">${who.length ? "Change winner" : "Record winner"}</button>`
                    : mine ? `<button class="btn small" type="button" data-undo="${h(mine.id)}">Undo</button>` : `<button class="btn small primary" type="button" data-did="${h(c.id)}">I did it</button>`}</div>
-        <div class="meta"><span class="pill ${typeCls}">${h(c.type)}</span>${c.secret ? `<span class="pill warn">Secret · hidden from ${h(crewBy(c.secret)?.name || "")}</span>` : ""}
+        <div class="meta">${modeOf(c) ? `<span class="pill" style="background:${modeOf(c) === "Solo" ? "var(--ink)" : "transparent"};color:${modeOf(c) === "Solo" ? "var(--bg)" : "var(--ink)"};border-color:var(--ink)">${modeOf(c)}</span>` : ""}<span class="pill ${typeCls}">${h(c.type)}</span>${c.secret ? `<span class="pill warn">Secret · hidden from ${h(crewBy(c.secret)?.name || "")}</span>` : ""}
           ${who.length ? `<span class="avs">${who.map(x => avatar(x.crew)).join("")}</span><span class="muted" style="font-size:12px">${isComp ? "Winner: " : "Done by "}${who.map(x => h(crewBy(x.crew)?.name)).join(", ")}</span>` : ""}
           <button class="link" type="button" data-proof="${h(c.id)}">+ Add proof</button>
           ${who.length && !isComp ? `<button class="link" type="button" data-strike="${h(c.id)}">Strike a claim</button>` : ""}
