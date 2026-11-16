@@ -352,18 +352,18 @@ const DAYS = [
     ["6:00 PM","Back to the Airbnb to recharge",null],
     ["10:00 PM","Out for dinner",null]],
     wear:"Trousers and covered shoulders for the mosques; comfortable shoes for the bazaar."},
-  {n:4,date:"2026-11-17",dow:"Tue",label:"Tue Nov 17",title:"Galata, Beyoğlu + hamam",crew:"All 6",party:true,items:[
+  {n:4,date:"2026-11-17",dow:"Tue",label:"Tue Nov 17",title:"Dolmabahçe to Galata + hamam",crew:"All 6",party:true,items:[
     ["9:00 AM","Breakfast",null],
-    ["10:30 AM","Leave the Airbnb",null],
-    ["11:15 AM","Ferry down the Bosphorus to Karaköy, then walk up to Galata","Karaköy İskelesi"],
-    ["12:00 PM","Galata Tower (Galata Kulesi): up to the balcony for the 360° view. Expect a queue","Galata Tower"],
-    ["12:45 PM","Galata lanes and what's left of the old Genoese walls, down the Kamondo Stairs. For something more adventurous, ride the Tünel, the 1875 underground funicular, from Karaköy back up the hill","Kamondo Stairs"],
-    ["1:30 PM","Lunch, pick one: Karaköy Lokantası (classic meze and mains), Dürümzade (legendary dürüm, quick and cheap, off İstiklal) or Hamdi (kebabs with a Golden Horn view, across the Galata Bridge)","Karaköy Lokantası"],
-    ["2:45 PM","Up İstiklal to Çiçek Pasajı (the Flower Passage), then wander Cihangir's cafés and side streets","Çiçek Pasajı"],
-    ["3:45 PM","Nargile (hookah) and Turkish coffee in Tophane, the old water-pipe quarter, next to the hamam","Tophane nargile"],
+    ["10:15 AM","Taxi to Dolmabahçe (10 min)",null],
+    ["10:30 AM","Dolmabahçe Palace (Dolmabahçe Sarayı): guided route through the state rooms and the Harem, about 2 hrs. No photos inside; book tickets online","Dolmabahçe Palace"],
+    ["12:30 PM","Make your way down the Bosphorus to Karaköy (about 30 min on foot). On the way, pick any:\n• Dolmabahçe Clock Tower and Mosque, right outside the palace\n• Istanbul Modern, the art museum on the Karaköy waterfront\n• Tophane's fountain and Kılıç Ali Paşa Mosque\n• Tired legs: T1 tram from Kabataş to Karaköy, two stops","Istanbul Modern"],
+    ["1:15 PM","Lunch, pick one:\n• Karaköy Lokantası: classic meze and mains, sit-down\n• Dürümzade: legendary dürüm off İstiklal, quick and cheap\n• Hamdi: kebabs with a Golden Horn view, across the Galata Bridge","Karaköy Lokantası"],
+    ["2:15 PM","Galata Tower (Galata Kulesi): up to the balcony for the 360° view. Expect a queue","Galata Tower"],
+    ["3:00 PM","Around Galata, pick any:\n• What's left of the old Genoese Galata walls\n• Kamondo Stairs, the Art Nouveau staircase\n• Galata's lanes and cafés, or Cihangir 10 min uphill\n• Something adventurous: the Tünel, the 1875 underground funicular","Kamondo Stairs"],
+    ["3:45 PM","Nargile (hookah) and Turkish coffee in Tophane, next to the hamam","Tophane nargile"],
     ["4:30 PM","Turkish bath at Kılıç Ali Paşa Hamam. Men's session opens 4:30 PM; book ahead","Kılıç Ali Paşa Hamamı"],
     ["6:30 PM","Back to the Airbnb to relax",null],
-    ["10:00 PM","Night out: Karaköy or Asmalımescit bars, or across to Kadıköy's Kadife Sokak",null]],
+    ["10:00 PM","Night out, pick one:\n• Dinner in Çiçek Pasajı (the Flower Passage), then İstiklal\n• Asmalımescit's bars and meyhanes\n• Karaköy bars by the water","Çiçek Pasajı"]],
     wear:"Shoes for Galata's steep hills and stairs. Pack flip-flops for the hamam; it provides the peştemal (towel wrap)."},
   {n:5,date:"2026-11-18",dow:"Wed",label:"Wed Nov 18",title:"Thrace wine day + big night out",crew:"All 6",party:true,items:[
     ["8:00 AM","Breakfast",null],
@@ -374,10 +374,10 @@ const DAYS = [
     ["4:00 PM","Drive back to the Airbnb (drive ≈ 2 hrs)",null],
     ["6:00 PM","Rest and get ready",null],
     ["9:00 PM","Dinner for six (book a table)",null],
-    ["10:30 PM","Big night out, pick one: a club table with bottle service (book ahead; dress code; groups of men need a reservation) or an escape room at Cicero Pirera, then drinks",null]],
+    ["10:30 PM","Big night out, pick one:\n• Club table with bottle service (book ahead; dress code; groups of men need a reservation)\n• Escape room at Cicero Pirera, then drinks",null]],
     wear:"Smart-casual for the wineries with a warm layer; it is windy in November. Night: collared shirt or sharp knit, leather shoes."},
   {n:6,date:"2026-11-19",dow:"Thu",label:"Thu Nov 19",title:"Free morning, Dev flies home",crew:"All 6 → 5 after Dev leaves",party:false,items:[
-    ["Morning","Sleep in. Options: Topkapı Palace (+ Harem), or the Süleymaniye terrace over the Golden Horn","Topkapı Palace"],
+    ["Morning","Sleep in, then pick one:\n• Topkapı Palace (+ Harem)\n• Süleymaniye Mosque terrace over the Golden Horn\n• Beşiktaş market for the 200 Lira Gift race","Topkapı Palace"],
     ["1:15 PM","Dev: pre-booked taxi Airbnb → IST (≈ 50 min), flight 4:30 PM","Istanbul Airport"],
     ["Evening","Easy dinner in Ortaköy","Ortaköy"]],
     wear:"Comfortable; trousers and covered shoulders if you visit a mosque."},
@@ -405,6 +405,7 @@ const DAYS = [
 
 // [lat, lng] for every map query used in DAYS. Approximate pin positions.
 const PLACES = {
+  "Istanbul Modern": [41.0267, 28.9834],
   "Galata Tower": [41.0256, 28.9741],
   "Kamondo Stairs": [41.0242, 28.9746],
   "Karaköy Lokantası": [41.0236, 28.9806],
@@ -544,8 +545,8 @@ const CHALLENGES = [
   {id:"g3-bazaar", day:3, type:"Detour", pts:25, t:"Haggle or Hunt",
     d:"Grand Bazaar. Haggle: get 30% off a gift for the bride, cash only. Hunt: find a shop that sells only one thing and get a photo with the owner.",
     proof:"Receipt or photo."},
-  {id:"g2-ferry", day:4, type:"Roadblock", pts:20, t:"Ferry Navigator",
-    d:"On the 11:15 ferry to Karaköy, get a local to name three landmarks for you on camera.",
+  {id:"g2-ferry", day:4, type:"Roadblock", pts:20, t:"Waterfront Navigator",
+    d:"On the walk from Dolmabahçe to Karaköy, get a local to name three landmarks across the water for you on camera.",
     proof:"The video."},
   {id:"g2-tavla", day:4, type:"Route Info", pts:30, t:"Tavla Hall",
     d:"Find a kahvehane in Tophane or Karaköy and challenge the regulars to tavla (backgammon). The crew scores if anyone beats a local.",
@@ -1151,7 +1152,7 @@ VIEWS.itinerary = {
     $("#day-card").innerHTML = `<article class="panel stack">
       <div class="spread"><div><div class="eyebrow">Day ${d.n} · ${h(d.label)}</div><h3 style="font-size:30px;margin-top:6px">${h(d.title)}</h3></div>
         <div class="row">${d.party ? `<span class="pill party">Party night</span>` : ""}<span class="pill turq">Crew: ${h(d.crew)}</span></div></div>
-      <div class="timeline">${d.items.map(([t, p, q, ch]) => `<div class="tl"><time>${h(t)}</time><div class="what"><div>${h(p)}</div>
+      <div class="timeline">${d.items.map(([t, p, q, ch]) => `<div class="tl"><time>${h(t)}</time><div class="what"><div>${planHtml(p)}</div>
         ${ch ? `<div class="changed">✱ Changed: ${h(ch)}</div>` : ""}
         ${q ? `<a href="${mapUrl(q)}" target="_blank" rel="noopener" style="font-size:13px;font-weight:600">Map: ${h(q)} ↗</a>` : ""}</div></div>`).join("")}</div>
       <div class="wear"><b>Dress code</b>${h(d.wear)}</div>
@@ -1166,10 +1167,16 @@ let mapDay = "all", leafletMap = null, mapLayer = null, mapMarkers = [];
 function loadLeaflet() {
   return window.L ? Promise.resolve(window.L) : Promise.reject(new Error("The map library didn't load."));
 }
+// Itinerary text: first line is the plan, further lines starting with "• " are options.
+function planHtml(p) {
+  const [head, ...opts] = String(p).split("\n");
+  return h(head) + (opts.length ? `<ul class="plain" style="margin-top:6px">${opts.map(o => `<li>${h(o.replace(/^•\s*/, ""))}</li>`).join("")}</ul>` : "");
+}
+const planHead = p => String(p).split("\n")[0];
 function mapStops() {
   const out = [];
   DAYS.forEach(d => d.items.forEach(([time, plan, q]) => {
-    if (q && PLACES[q] && !(q === "Istanbul Airport" && out.some(o => o.q === q && o.day === d.n))) out.push({day: d.n, label: d.label, time, plan, q, ll: PLACES[q]});
+    if (q && PLACES[q] && !(q === "Istanbul Airport" && out.some(o => o.q === q && o.day === d.n))) out.push({day: d.n, label: d.label, time, plan: planHead(plan), q, ll: PLACES[q]});
   }));
   return out;
 }
