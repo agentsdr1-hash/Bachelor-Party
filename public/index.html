@@ -381,11 +381,12 @@ const DAYS = [
     ["Morning","Sleep in, then pick one:\n• Topkapı Palace (+ Harem)\n• Süleymaniye Mosque terrace over the Golden Horn\n• Beşiktaş market for the 200 Lira Gift race","Topkapı Palace"],
     ["1:15 PM","Dev: pre-booked taxi Airbnb → IST (≈ 50 min), flight 4:30 PM","Istanbul Airport"],
     ["5:00 PM","4-hour Bosphorus exploration, north along the water from base. First stop Kuruçeşme: waterfront stroll, luxury yachts, seaside cafés and photo spots","Kuruçeşme sahil"],
-    ["5:45 PM","Arnavutköy: colourful Ottoman wooden houses, cobblestone streets, hidden lanes. Good dinner stop, pick one:\n• Waterfront fish restaurants on the water's edge\n• Keep walking and eat in Bebek","Arnavutköy Istanbul"],
+    ["5:45 PM","Arnavutköy: colourful Ottoman wooden houses, cobblestone streets, hidden lanes","Arnavutköy Istanbul"],
     ["6:45 PM","Bebek: yacht harbour, Bebek Park, waterfront cafés and people-watching","Bebek Istanbul"],
     ["7:45 PM","Aşiyan: hillside viewpoint over the Bosphorus. The Aşiyan Museum is a daytime visit, closed by now","Aşiyan Müzesi"],
     ["8:15 PM","Rumeli Hisarı: the Ottoman fortress, floodlit at night, with the bridge behind it. View it from the waterfront; the inside is daytime only","Rumeli Hisarı"],
-    ["9:00 PM","Adventure add-ons, pick any:\n• Bosphorus speedboat or sightseeing cruise\n• Private yacht experience\n• Guided motorcycle ride around the Bosphorus\n• Daytime extra on another day: Emirgan Park's gardens, ponds and pavilions, just north","Rumeli Hisarı"]],
+    ["8:45 PM","Cross to the Asian side for dinner, pick one:\n• Taxi over the bridge to Kadıköy (≈ 40 min)\n• The adventure way: private yacht or speedboat across the Bosphorus (book ahead)\n• Guided motorcycle ride over the bridge (book ahead)",null],
+    ["9:30 PM","Dinner in Kadıköy, pick an area:\n• Moda: quieter streets and spots near the water\n• Kadıköy Çarşı (the market streets): meyhanes and grills\n• Then drinks on Kadife Sokak, the bar street","Moda Kadıköy"]],
     wear:"Warm layers: it's dark from about 4:45 PM and cold by the water. Comfortable shoes for cobblestones."},
   {n:7,date:"2026-11-20",dow:"Fri",label:"Fri Nov 20",title:"Rest day, club night",crew:"5",party:true,items:[
     ["Morning","Sleep in",null],
@@ -411,6 +412,7 @@ const DAYS = [
 
 // [lat, lng] for every map query used in DAYS. Approximate pin positions.
 const PLACES = {
+  "Moda Kadıköy": [40.9822, 29.0262],
   "Kuruçeşme sahil": [41.0596, 29.0366],
   "Arnavutköy Istanbul": [41.0670, 29.0430],
   "Aşiyan Müzesi": [41.0818, 29.0538],
@@ -494,7 +496,7 @@ const NEIGHBORHOODS = [
   {side: "European side", name: "Bebek & Arnavutköy", note: "Walk the scenic Bosphorus promenade between the two.", plan: "Days 6, 7", pins: [["Arnavutköy", "Arnavutköy Istanbul", [41.0670, 29.0430]]]},
   {side: "Asian side", name: "Üsküdar, Kuzguncuk & Çamlıca", note: "A great combo for one day: waterfront mosques, a village-like street, the hilltop view.", plan: null,
     pins: [["Üsküdar", "Üsküdar Meydanı", [41.0262, 29.0156]], ["Kuzguncuk", "Kuzguncuk Istanbul", [41.0368, 29.0310]], ["Çamlıca Hill", "Büyük Çamlıca Tepesi", [41.0277, 29.0687]]]},
-  {side: "Asian side", name: "Kadıköy", note: "Easy-going by day, nightlife in the evening.", plan: null, pins: [["Kadıköy", "Kadıköy Çarşı", [40.9903, 29.0253]]]},
+  {side: "Asian side", name: "Kadıköy", note: "Easy-going by day, nightlife in the evening.", plan: "Day 6 (dinner)", pins: [["Kadıköy", "Kadıköy Çarşı", [40.9903, 29.0253]]]},
 ];
 // Free-time pins for the map: extra sights plus neighbourhoods not on the plan
 const FREE_PINS = [
