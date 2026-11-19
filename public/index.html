@@ -188,6 +188,7 @@ ul.plain{margin:0;padding-left:18px;display:grid;gap:6px}
 .tl:last-child{border-bottom:0}
 .tl time{font:700 13px/1.5 var(--f-mono);color:var(--turq)}
 .tl .what{display:grid;gap:4px;min-width:0}
+.what .opts{color:var(--muted);font-size:14px}
 .changed{font-size:12.5px;color:var(--gold)}
 .wear{background:var(--panel-2);border-radius:8px;padding:12px 14px;font-size:14px}
 .wear b{font:700 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px}
@@ -380,6 +381,7 @@ const DAYS = [
   {n:6,date:"2026-11-19",dow:"Thu",label:"Thu Nov 19",title:"Free morning, Bosphorus evening",crew:"All 6 → 5 after Dev leaves",party:false,items:[
     ["Morning","Sleep in, then pick one:\n• Topkapı Palace (+ Harem)\n• Süleymaniye Mosque terrace over the Golden Horn\n• Beşiktaş market for the 200 Lira Gift race","Topkapı Palace"],
     ["1:15 PM","Dev: pre-booked taxi Airbnb → IST (≈ 50 min), flight 4:30 PM","Istanbul Airport"],
+    ["2:15 PM","Afternoon sight, pick one (back at base by 4:45):\n• Basilica Cistern: the sunken Byzantine palace with the Medusa heads\n• Rahmi M. Koç Museum: classic cars, planes and a submarine you can walk through, on the Golden Horn\n• Pera Museum: Orientalist paintings including The Tortoise Trainer, just off İstiklal","Basilica Cistern"],
     ["5:00 PM","Bosphorus evening, top 3 stops. First, Arnavutköy (10 min by taxi): colourful Ottoman wooden houses, cobblestone streets and hidden lanes, lit up after dark","Arnavutköy Istanbul"],
     ["6:15 PM","Walk the waterfront promenade to Bebek (15 min): yacht harbour, Bebek Park, and a drink at a waterfront café while you people-watch","Bebek Istanbul"],
     ["7:45 PM","Rumeli Hisarı (5 min by taxi, or 20 min on foot along the water): the Ottoman fortress floodlit at night, stone towers, the bridge behind it. Best photos of the evening","Rumeli Hisarı"],
@@ -389,7 +391,7 @@ const DAYS = [
   {n:7,date:"2026-11-20",dow:"Fri",label:"Fri Nov 20",title:"Rest day, club night",crew:"5",party:true,items:[
     ["Morning","Sleep in",null],
     ["11:30 AM","Bebek waterfront breakfast","Bebek Istanbul"],
-    ["2:00 PM","Dolmabahçe Palace, 10 min away (optional; last entry ≈ 4 PM)","Dolmabahçe Palace"],
+    ["2:00 PM","Afternoon sight (optional), pick one:\n• Topkapı Palace and the Harem, if you skipped it Thursday\n• Istanbul Modern, the art museum on the Karaköy waterfront\n• Museum of Innocence, Orhan Pamuk's novel turned into a museum, in Çukurcuma\n• Or the Barber challenge: hot towel, straight razor, flame on the ears","Topkapı Palace"],
     ["4:00 PM","Nap and reset",null],
     ["9:00 PM","Oligark dinner + VIP table. Main club night; dress code enforced, table minimum","Oligark Istanbul Kuruçeşme"]],
     wear:"Club dress code: collared shirt or sharp knit, tailored trousers or dark jeans, leather shoes. No sportswear, shorts or caps."},
@@ -1183,7 +1185,7 @@ function loadLeaflet() {
 // Itinerary text: first line is the plan, further lines starting with "• " are options.
 function planHtml(p) {
   const [head, ...opts] = String(p).split("\n");
-  return h(head) + (opts.length ? `<ul class="plain" style="margin-top:6px">${opts.map(o => `<li>${h(o.replace(/^•\s*/, ""))}</li>`).join("")}</ul>` : "");
+  return h(head) + (opts.length ? `<ul class="plain opts" style="margin-top:6px">${opts.map(o => `<li>${h(o.replace(/^•\s*/, ""))}</li>`).join("")}</ul>` : "");
 }
 const planHead = p => String(p).split("\n")[0];
 function mapStops() {
