@@ -188,6 +188,12 @@ ul.plain{margin:0;padding-left:18px;display:grid;gap:6px}
 .tl:last-child{border-bottom:0}
 .tl time{font:700 13px/1.5 var(--f-mono);color:var(--turq)}
 .tl .what{display:grid;gap:4px;min-width:0}
+.st{display:inline-flex;align-items:center;gap:4px;margin-top:6px;border:1px solid var(--line);background:var(--panel);border-radius:999px;padding:3px 10px;font:600 12px/1.4 var(--f-body);color:var(--muted);cursor:pointer;white-space:nowrap}
+.st.done{background:var(--ok);border-color:var(--ok);color:#fff}
+.st.skipped{border-color:var(--coral);color:var(--coral);background:transparent}
+.tl.is-skipped .what>div:first-child{text-decoration:line-through;color:var(--muted)}
+.actual{display:grid;gap:12px;border-top:2px solid var(--ink);padding-top:14px}
+.tally{display:flex;gap:8px;flex-wrap:wrap}
 .what .opts{color:var(--muted);font-size:14px}
 .changed{font-size:12.5px;color:var(--gold)}
 .wear{background:var(--panel-2);border-radius:8px;padding:12px 14px;font-size:14px}
@@ -1177,15 +1183,82 @@ VIEWS.itinerary = {
     $("#day-card").innerHTML = `<article class="panel stack">
       <div class="spread"><div><div class="eyebrow">Day ${d.n} · ${h(d.label)}</div><h3 style="font-size:30px;margin-top:6px">${h(d.title)}</h3></div>
         <div class="row">${d.party ? `<span class="pill party">Party night</span>` : ""}<span class="pill turq">Crew: ${h(d.crew)}</span></div></div>
-      <div class="timeline">${d.items.map(([t, p, q, ch]) => `<div class="tl"><time>${h(t)}</time><div class="what"><div>${planHtml(p)}</div>
+      <div class="timeline">${d.items.map(([t, p, q, ch]) => `<div class="tl" data-row="${itemId(d, t, p)}"><div><time>${h(t)}</time><br><button class="st" type="button" data-st="${itemId(d, t, p)}">Planned</button></div><div class="what"><div>${planHtml(p)}</div>
         ${ch ? `<div class="changed">✱ Changed: ${h(ch)}</div>` : ""}
         ${q ? `<a href="${mapUrl(q)}" target="_blank" rel="noopener" style="font-size:13px;font-weight:600">Map: ${h(q)} ↗</a>` : ""}</div></div>`).join("")}</div>
       <div class="wear"><b>Dress code</b>${h(d.wear)}</div>
       ${route ? `<div><a class="btn small" href="${route}" target="_blank" rel="noopener">Open today's route in Google Maps</a></div>` : ""}
+      <div class="actual">
+        <div class="spread"><div><div class="eyebrow"><span lang="tr">Gün sonu</span> · Planned vs actual</div><h3 style="margin-top:6px">How the day went</h3></div><div class="tally" id="tally"></div></div>
+        <p class="muted" style="font-size:14px">Tap the chip under each time: Planned → ✓ Done → ✕ Skipped. Everyone sees the same ticks.</p>
+        <div id="extras"></div>
+        <form class="row" id="extra-form" style="flex-wrap:nowrap">
+          <input type="text" id="extra-text" maxlength="120" placeholder="Something we did that wasn't on the plan">
+          <button class="btn small" type="submit" style="white-space:nowrap;flex:none">+ Add</button>
+        </form>
+        <div class="row"><a class="btn primary" id="wa-share" href="#" target="_blank" rel="noopener">Share to WhatsApp</a><button class="btn" type="button" id="copy-report">Copy report</button></div>
+        <p class="muted" style="font-size:13px">WhatsApp opens with the day's report filled in; pick the crew group and send.</p>
+      </div>
     </article>`;
+    $$("[data-st]").forEach(b => b.onclick = () => {
+      if (!needMe()) return;
+      const id = b.dataset.st, cur = (D.bookings.find(x => x.id === id) || {}).state;
+      const next = !cur ? "done" : cur === "done" ? "skipped" : null;
+      act(next ? Store.put("bookings", id, {kind: "plan", day: d.n, state: next, by: ME, at: Date.now()}) : Store.del("bookings", id));
+    });
+    $("#extra-form").onsubmit = e => { e.preventDefault(); if (!needMe()) return;
+      const text = $("#extra-text").value.trim(); if (!text) return;
+      act(Store.put("bookings", "ex-" + uid(), {kind: "extra", day: d.n, text, by: ME, at: Date.now()}), "Added").then(ok => { if (ok) $("#extra-text").value = ""; }); };
+    $("#copy-report").onclick = async () => { const r = dayReport(d);
+      try { await navigator.clipboard.writeText(r); toast("Report copied. Paste it in the WhatsApp group."); }
+      catch { openDialog(`<div class="dlg"><h3>Copy the report</h3><textarea style="min-height:260px" readonly>${h(r)}</textarea><div class="row" style="justify-content:flex-end"><button class="btn" type="button" data-close>Close</button></div></div>`); } };
+    this.update();
   },
-  update() {},
+  update() {
+    const d = DAYS[selDay - 1]; if (!d || !$("#tally")) return;
+    const st = id => (D.bookings.find(x => x.id === id) || {}).state;
+    $$("[data-st]").forEach(b => { const s = st(b.dataset.st);
+      b.className = "st" + (s ? " " + s : ""); b.textContent = s === "done" ? "✓ Done" : s === "skipped" ? "✕ Skipped" : "Planned";
+      const row = b.closest(".tl"); if (row) row.classList.toggle("is-skipped", s === "skipped"); });
+    const ids = d.items.map(([t, p]) => itemId(d, t, p));
+    const done = ids.filter(i => st(i) === "done").length, skipped = ids.filter(i => st(i) === "skipped").length;
+    $("#tally").innerHTML = `<span class="pill ok">✓ ${done} done</span><span class="pill party">✕ ${skipped} skipped</span><span class="pill">${ids.length - done - skipped} planned</span>`;
+    const ex = extrasOf(d);
+    $("#extras").innerHTML = ex.length ? `<div class="eyebrow" style="margin-bottom:6px">Also did</div><ul class="plain">${ex.map(x => `<li>${h(x.text)} <span class="muted" style="font-size:12px">· ${h(crewBy(x.by)?.name || "")}</span>${x.by === ME || Store.owner ? ` <button class="link" type="button" data-rmx="${h(x.id)}" style="color:var(--coral)">Remove</button>` : ""}</li>`).join("")}</ul>` : "";
+    $$("[data-rmx]").forEach(b => b.onclick = () => act(Store.del("bookings", b.dataset.rmx)));
+    $("#wa-share").href = "https://wa.me/?text=" + encodeURIComponent(dayReport(d));
+  },
 };
+// Stable id for an itinerary item (day + time + first line of the plan), used for done/skipped ticks.
+function itemId(d, time, plan) {
+  const s = `${d.n}|${time}|${planHead(plan)}`; let hsh = 0;
+  for (let i = 0; i < s.length; i++) hsh = (hsh * 31 + s.charCodeAt(i)) | 0;
+  return `it-${d.n}-${(hsh >>> 0).toString(36)}`;
+}
+const extrasOf = d => D.bookings.filter(x => x.kind === "extra" && x.day === d.n).sort((a, b) => a.at - b.at);
+// WhatsApp-ready summary of one day: planned vs actual, extras, challenges, standings.
+function dayReport(d) {
+  const st = id => (D.bookings.find(x => x.id === id) || {}).state;
+  const items = d.items.map(([t, p]) => ({t, p: planHead(p).replace(/,? pick (one|any)[^:]*:?$/i, "").replace(/:$/, ""), s: st(itemId(d, t, p))}));
+  const done = items.filter(i => i.s === "done"), skipped = items.filter(i => i.s === "skipped"), open = items.filter(i => !i.s);
+  const ex = extrasOf(d);
+  const claims = D.completions.filter(c => c.at && istDate(c.at) === d.date);
+  const chs = Object.fromEntries(allChallenges().map(c => [c.id, c]));
+  const proofs = D.vault.filter(v => v.ch && v.at && istDate(v.at) === d.date).length;
+  const top = scores().filter(r => r.total > 0).slice(0, 3);
+  const L = [];
+  L.push(`*Umang's Bachelor · Day ${d.n} · ${d.label}*`);
+  L.push(d.title);
+  if (done.length) { L.push("", "✅ *Done*"); done.forEach(i => L.push(`• ${i.t}: ${i.p}`)); }
+  if (ex.length) { L.push("", "➕ *Also did*"); ex.forEach(x => L.push(`• ${x.text}`)); }
+  if (skipped.length) { L.push("", "❌ *Skipped*"); skipped.forEach(i => L.push(`• ${i.t}: ${i.p}`)); }
+  if (open.length && !done.length && !skipped.length) { L.push("", "🗓 *Plan*"); open.forEach(i => L.push(`• ${i.t}: ${i.p}`)); }
+  if (claims.length) { L.push("", "🏁 *Challenges*"); claims.forEach(c => { const ch = chs[c.ch]; if (ch && !ch.secret) L.push(`• ${crewBy(c.crew)?.name || ""}: ${ch.t} (+${ch.pts})`); }); }
+  if (proofs) L.push("", `📸 ${proofs} proof photo${proofs === 1 ? "" : "s"} on the site`);
+  if (top.length) L.push("", "🏆 *Standings:* " + top.map((r, i) => `${i + 1}. ${crewBy(r.key).name} ${r.total}`).join(" · "));
+  L.push("", location.origin + "/#itinerary");
+  return L.join("\n");
+}
 
 /* ---------- THE MAP ---------- */
 let mapDay = "all", leafletMap = null, mapLayer = null, mapMarkers = [];
