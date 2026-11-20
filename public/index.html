@@ -398,14 +398,17 @@ const DAYS = [
     ["6:30 PM","Rest and get ready",null],
     ["9:30 PM","Oligark dinner + VIP table. Main club night; table minimum","Oligark Istanbul Kuruçeşme"]],
     wear:"Day: smart-casual with a warm layer; vineyards are windy in November. Night: collared shirt or sharp knit, tailored trousers or dark jeans, leather shoes. No sportswear, shorts or caps."},
-  {n:8,date:"2026-11-21",dow:"Sat",label:"Sat Nov 21",title:"Old City catch-up, final night",crew:"5 → 4 after Sagar leaves",party:true,items:[
-    ["9:30 AM","Farewell breakfast, Beşiktaş breakfast street","Beşiktaş Kahvaltıcılar Sokağı"],
-    ["11:00 AM","Taxi to Sultanahmet (40 min)",null],
-    ["11:45 AM","Abhi + Nick: Basilica Cistern → Hagia Sophia → Blue Mosque after ~1:30 PM","Basilica Cistern","Re-ordered so the Blue Mosque falls between noon and afternoon prayers"],
-    ["11:45 AM","Umang + Sagar: Museum of Turkish and Islamic Arts","Museum of Turkish and Islamic Arts"],
-    ["5:30 PM","Sagar leaves the Airbnb for IST (flight 9:30 PM)","Istanbul Airport"],
-    ["8:30 PM","360 Istanbul dinner, then İstiklal live music. Akshay and Abhi stop early (3:00 and 4:30 AM pickups)","360 Istanbul"]],
-    wear:"Walking shoes by day. 360 Istanbul: smart-casual, a jacket for the terrace."},
+  {n:8,date:"2026-11-21",dow:"Sat",label:"Sat Nov 21",title:"Gifts, hamam + dinner cruise",crew:"5 → 4 after Sagar leaves",party:true,items:[
+    ["9:30 AM","Farewell breakfast with Sagar, Beşiktaş breakfast street","Beşiktaş Kahvaltıcılar Sokağı"],
+    ["11:00 AM","Leave for gift shopping, pick any:\n• Spice Bazaar: lokum, tea, spices, Turkish coffee\n• Grand Bazaar: ceramics, lamps, textiles, nazar beads\n• Arasta Bazaar behind the Blue Mosque: carpets and ceramics, quieter","Spice Bazaar Istanbul"],
+    ["1:30 PM","Lunch near the bazaars",null],
+    ["3:00 PM","Hamam (Turkish bath), the traditional way: steam on the hot marble, a full kese scrub and a foam wash. Pick one, both a short walk from the bazaars:\n• Çemberlitaş Hamamı (1584)\n• Cağaloğlu Hamamı (1741)","Çemberlitaş Hamamı"],
+    ["4:30 PM","Sagar heads back to pack; he leaves the Airbnb for IST at 5:30 PM (flight 9:30 PM)","Istanbul Airport"],
+    ["5:00 PM","Back to the Airbnb to rest and get ready",null],
+    ["8:00 PM","Be at the cruise meeting point (on your ticket; the map shows Kabataş). Boarding for an 8:30 PM start","Kabataş İskelesi"],
+    ["8:30 PM","Bosphorus dinner cruise and show with Mega Lüfer Yachts: private table for 4, standard menu, unlimited drinks. Ends 11:30 PM",null],
+    ["11:30 PM","Bars near the pier (Akshay and Abhi have 3:00 and 4:30 AM airport pickups, so pace it), pick one:\n• Beşiktaş Çarşı: packed bar streets, 5 min by taxi\n• Karaköy: bars by the water, two tram stops\n• Up to Taksim on the Kabataş funicular for İstiklal","Beşiktaş Çarşı"]],
+    wear:"Walking shoes and a small bag for the hamam (flip-flops; the hamam gives you a peştemal). Cruise: smart-casual and a jacket for the deck."},
   {n:9,date:"2026-11-22",dow:"Sun",label:"Sun Nov 22",title:"Departures",crew:"Umang, Abhi, Nick, Akshay",party:false,items:[
     ["3:00 AM","Akshay to IST (flight 6:30 AM)","Istanbul Airport"],
     ["4:30 AM","Abhi to IST (flight 8:00 AM)","Istanbul Airport"],
@@ -415,6 +418,10 @@ const DAYS = [
 
 // [lat, lng] for every map query used in DAYS. Approximate pin positions.
 const PLACES = {
+  "Spice Bazaar Istanbul": [41.0166, 28.9706],
+  "Çemberlitaş Hamamı": [41.0083, 28.9716],
+  "Kabataş İskelesi": [41.0336, 28.9931],
+  "Beşiktaş Çarşı": [41.0428, 29.0063],
   "Moda Kadıköy": [40.9822, 29.0262],
   "Kuruçeşme sahil": [41.0596, 29.0366],
   "Arnavutköy Istanbul": [41.0670, 29.0430],
@@ -533,7 +540,8 @@ const BOOKINGS = [
   ["Winery tastings (Fri): Chateau Nuzun 10:30 AM + Barbare 2:00 PM, confirm both","","b7"],
   ["Dev's taxi to IST (Thu 1:15 PM)","","b8"],
   ["Oligark dinner + VIP table (Fri, 9:30 PM)","","b9"],
-  ["360 Istanbul (Sat)","","b10"],
+  ["Bosphorus dinner cruise (Sat 8:30 PM, Mega Lüfer Yachts, 4 people): booked","","b10"],
+  ["Hamam (Sat 3:00 PM): Çemberlitaş or Cağaloğlu, men's section, book ahead","","b12"],
   ["Airport transfers: Sagar Sat 5:30 PM · Akshay Sun 3:00 AM · Abhi Sun 4:30 AM · Umang + Nick Sun 11:30 AM","","b11"],
 ];
 const RISKS = [
@@ -594,7 +602,7 @@ const CHALLENGES = [
     d:"Ride the red İstiklal tram from Taksim to Tünel, one at a time. Fastest door to door wins. Walk it if the tram isn't running.",
     proof:"Start and finish photos with timestamps."},
   {id:"g6-finale", day:8, type:"Pit Stop", pts:30, t:"Final Pit Stop",
-    d:"Recreate the crew's first group photo of the trip on the 360 İstanbul terrace. Whole crew, one take.",
+    d:"Recreate the crew's first group photo of the trip on the deck of the dinner cruise, with the bridge lit up behind you. Whole crew, one take.",
     proof:"Both photos side by side."},
   {id:"any-sultan", day:null, anyday:true, type:"Route Info", pts:25, t:"The Sultan's First",
     d:"Get Umang to try something he has never done before: a food, a game, a dance, a ride, anything. He has to admit it's a first.",
@@ -607,7 +615,7 @@ const RULES = [
   "Nothing inside mosques or during prayer times.",
 ];
 const PUNISHMENTS = [
-  "Buys the first round at 360 Istanbul (drinks run about 2× home prices).",
+  "Buys the first round at the bars after the cruise (drinks run about 2× home prices).",
   "Wears the bazaar fez through IST security on departure day.",
   "Carries the groom's bag from the Airbnb to the airport.",
   "Sings one full song on İstiklal Avenue, crew's choice.",
